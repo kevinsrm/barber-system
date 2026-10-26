@@ -1,71 +1,129 @@
-<!-- SEÇÃO PRINCIPAL DE SERVIÇOS -->
-<section class="bg-zinc-950 py-16 min-h-[100dvh]">
-    <div class="max-w-7xl mx-auto px-6">
-
-        {{#if servicos.length}}
-            <!-- FORMULÁRIO DINÂMICO DE SELEÇÃO DE SERVIÇOS -->
-            <form action="/agendar" method="POST" id="form-servicos">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-                    {{#each servicos}}
-                        <label class="relative bg-gradient-to-b from-zinc-900 to-zinc-900/60 border border-zinc-800 hover:border-amber-500/40 rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1 shadow-xl flex flex-col justify-between group cursor-pointer has-[:checked]:border-amber-500 has-[:checked]:bg-amber-500/5">
-                            
-                            <div>
-                                <div class="flex items-start justify-between gap-4 mb-4">
-                                    <div class="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 text-xl group-hover:bg-amber-500 group-hover:text-zinc-950 transition-colors duration-300">
-                                        <i class="bi {{#if icon}}{{icon}}{{else}}bi-scissors{{/if}}"></i>
-                                    </div>
-
-                                    <!-- CHECKBOX ESTILIZADO -->
-                                    <div class="flex items-center gap-2">
-                                        <span class="text-2xl font-black text-amber-400 tracking-tight">R$ {{preco}}</span>
-                                        <input type="checkbox" name="servicos" value="{{id}}" class="w-5 h-5 rounded border-zinc-700 bg-zinc-800 text-amber-500 focus:ring-amber-500 focus:ring-offset-zinc-900">
-                                    </div>
-                                </div>
-
-                                <h3 class="text-xl font-bold text-white mb-2 group-hover:text-amber-400 transition-colors">
-                                    {{nome}}
-                                </h3>
-
-                                <p class="text-zinc-400 text-sm font-light leading-relaxed mb-6">
-                                    {{descricao}}
-                                </p>
-                            </div>
-
-                            <div class="pt-4 border-t border-zinc-800/80 flex items-center justify-between">
-                                <span class="text-xs text-zinc-500 font-medium inline-flex items-center gap-1.5">
-                                    <i class="bi bi-clock"></i> {{duracao}} min
-                                </span>
-                                <span class="text-xs font-semibold text-amber-400 group-hover:text-amber-300 inline-flex items-center gap-1 transition-colors">
-                                    Selecionar <i class="bi bi-check2-circle"></i>
-                                </span>
-                            </div>
-                        </label>
-                    {{/each}}
-                </div>
-
-                <!-- BOTAO DE ENVIAR O FORMULÁRIO COM OS SERVIÇOS SELECIONADOS -->
-                <div class="text-center">
-                    <button type="submit" class="bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold px-10 py-4 rounded-xl shadow-lg shadow-amber-500/10 transition-all duration-300 inline-flex items-center gap-2 text-base transform hover:-translate-y-0.5">
-                        <i class="bi bi-calendar-check-fill"></i> Prosseguir com os Selecionados
-                    </button>
-                </div>
-            </form>
-
-        {{else}}
-            <!-- MENSAGEM DINÂMICA QUANDO NÃO HÁ SERVIÇOS CADASTRADOS -->
-            <div class="max-w-md mx-auto text-center py-12 px-6 bg-zinc-900/50 border border-zinc-800 rounded-3xl backdrop-blur-sm">
-                <div class="w-16 h-16 bg-amber-500/10 border border-amber-500/20 text-amber-400 rounded-2xl flex items-center justify-center mx-auto mb-4 text-3xl">
-                    <i class="bi bi-journal-x"></i>
-                </div>
-                <h3 class="text-xl font-bold text-white mb-2">Nenhum serviço disponível no momento</h3>
-                <p class="text-zinc-400 text-sm font-light mb-6 leading-relaxed">
-                    Estamos atualizando nosso catálogo e tabela de preços. Entre em contato conosco ou faça um agendamento geral.
-                </p>
-                <a href="/agendar" class="bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold px-6 py-3 rounded-xl shadow-lg shadow-amber-500/10 transition-all duration-300 inline-flex items-center justify-center gap-2 text-sm">
-                    <i class="bi bi-calendar-check-fill"></i> Ir para Agendamento
-                </a>
-            </div>
-        {{/if}}
-
+<section class="bg-zinc-950 border-b border-zinc-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-10 sm:py-12">
+        <p class="text-[11px] font-semibold uppercase tracking-widest text-amber-500">Agendamento online</p>
+        <h1 class="text-2xl sm:text-4xl font-black text-white mt-1">Escolha seus serviços e o melhor horário</h1>
+        <p class="text-sm text-zinc-400 mt-2 max-w-2xl">Leva menos de um minuto. Você recebe a confirmação da barbearia pelo WhatsApp.</p>
     </div>
 </section>
+
+<section class="py-8 sm:py-12 bg-zinc-950">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6">
+
+        {{#if mensagem}}
+        <div class="alerta alerta-erro mb-5 max-w-3xl">
+            <i class="bi bi-exclamation-triangle"></i>
+            <span>{{mensagem}}</span>
+        </div>
+        {{/if}}
+
+        <form id="form-agendamento" method="POST" action="/agendar" class="grid grid-cols-1 lg:grid-cols-5 gap-5" data-hora-selecionada="{{dados.hora}}">
+
+            <!-- Serviços -->
+            <div class="lg:col-span-3">
+                <div class="flex items-center justify-between mb-3">
+                    <h2 class="text-lg font-bold text-white"><span class="text-amber-500">1.</span> Escolha os serviços</h2>
+                    <span class="text-xs text-zinc-500" id="contador-servicos">0 selecionado(s)</span>
+                </div>
+
+                {{#if servicos.length}}
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {{#each servicos}}
+                    <label class="relative cartao p-4 cursor-pointer hover:border-amber-500/40 transition">
+                        <input type="checkbox" name="servicos" value="{{id}}" data-preco="{{valorInput preco}}" data-duracao="{{duracao}}" {{#if selecionado}}checked{{/if}} class="campo-check absolute top-4 right-4">
+                        <p class="font-semibold text-sm text-zinc-100 pr-7">{{nome}}</p>
+                        <p class="text-[11px] uppercase tracking-wider text-zinc-500 mt-1">{{#if categoria}}{{categoria.nome}}{{else}}Serviço{{/if}}</p>
+                        <p class="text-xs text-zinc-400 mt-2">{{duracao}} min</p>
+                        <p class="text-sm font-bold text-amber-400 mt-1">{{moeda preco}}</p>
+                    </label>
+                    {{/each}}
+                </div>
+                {{else}}
+                <div class="cartao p-6 text-sm text-zinc-400">
+                    Nenhum serviço ativo no momento. Fale com a barbearia para agendar.
+                </div>
+                {{/if}}
+
+                <!-- Resumo -->
+                <div class="cartao p-4 mt-4">
+                    <h3 class="text-sm font-semibold text-white mb-2">Resumo</h3>
+                    <div class="flex items-center justify-between text-sm text-zinc-400"><span>Serviços</span><span id="resumo-quantidade">0</span></div>
+                    <div class="flex items-center justify-between text-sm text-zinc-400 mt-1"><span>Duração</span><span id="resumo-duracao">0 min</span></div>
+                    <div class="flex items-center justify-between text-base font-bold text-amber-400 mt-2 pt-2 border-t border-zinc-800"><span>Total</span><span id="resumo-total">R$ 0,00</span></div>
+                </div>
+            </div>
+
+            <!-- Dados -->
+            <div class="lg:col-span-2">
+                <h2 class="text-lg font-bold text-white mb-3"><span class="text-amber-500">2.</span> Seus dados e horário</h2>
+
+                <div class="cartao p-4 sm:p-5 space-y-4">
+                    {{#if usuario}}
+                    <div class="flex items-center gap-3 p-3 rounded-xl bg-zinc-950 border border-zinc-800">
+                        <span class="w-9 h-9 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-bold flex items-center justify-center">{{iniciais usuario.nome}}</span>
+                        <div class="min-w-0">
+                            <p class="text-sm font-medium text-zinc-100 truncate">{{usuario.nome}}</p>
+                            <p class="text-xs text-zinc-500 truncate">{{usuario.email}}</p>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="telefone" class="rotulo">WhatsApp para contato</label>
+                        <input type="tel" id="telefone" name="telefone" value="{{dados.telefone}}" class="campo" placeholder="(98) 99999-9999">
+                    </div>
+                    {{else}}
+                    <div>
+                        <label for="nome" class="rotulo">Seu nome <span class="text-amber-500">*</span></label>
+                        <input type="text" id="nome" name="nome" value="{{dados.nome}}" required class="campo" placeholder="Nome completo">
+                    </div>
+                    <div>
+                        <label for="telefone" class="rotulo">WhatsApp <span class="text-amber-500">*</span></label>
+                        <input type="tel" id="telefone" name="telefone" value="{{dados.telefone}}" required class="campo" placeholder="(98) 99999-9999">
+                    </div>
+                    <div>
+                        <label for="email" class="rotulo">E-mail (opcional)</label>
+                        <input type="email" id="email" name="email" value="{{dados.email}}" class="campo" placeholder="seu@email.com">
+                    </div>
+                    <p class="text-xs text-zinc-500">
+                        <i class="bi bi-info-circle"></i>
+                        Já tem conta? <a href="/login" class="text-amber-400 hover:underline">Entre aqui</a> para acompanhar suas reservas.
+                    </p>
+                    {{/if}}
+
+                    <div class="pt-1">
+                        <label for="funcionarioId" class="rotulo">Profissional <span class="text-amber-500">*</span></label>
+                        <select id="funcionarioId" name="funcionarioId" required class="campo-select">
+                            <option value="">Selecione...</option>
+                            {{#each funcionarios}}
+                            <option value="{{id}}" {{#if (eq ../dados.funcionarioId id)}}selected{{/if}}>{{nome}}{{#if cargo}} · {{cargo.nome}}{{/if}}</option>
+                            {{/each}}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="data" class="rotulo">Data <span class="text-amber-500">*</span></label>
+                        <input type="date" id="data" name="data" value="{{dados.data}}" min="{{dataMinima}}" max="{{dataMaxima}}" required class="campo">
+                    </div>
+
+                    <div>
+                        <label for="hora" class="rotulo">Horário <span class="text-amber-500">*</span></label>
+                        <select id="hora" name="hora" required class="campo-select">
+                            <option value="{{dados.hora}}">{{#if dados.hora}}{{dados.hora}}{{else}}Escolha data e profissional{{/if}}</option>
+                        </select>
+                        <p id="aviso-horarios" class="ajuda">Selecione serviços, profissional e data para ver os horários livres.</p>
+                    </div>
+
+                    <div>
+                        <label for="observacoes" class="rotulo">Observações (opcional)</label>
+                        <textarea id="observacoes" name="observacoes" rows="2" class="campo-texto" placeholder="Ex.: máquina 1 nas laterais">{{dados.observacoes}}</textarea>
+                    </div>
+
+                    <button type="submit" class="botao botao-primario w-full py-3">
+                        <i class="bi bi-calendar-check-fill"></i> Confirmar agendamento
+                    </button>
+                    <p class="text-[11px] text-zinc-500 text-center">Ao confirmar, seu horário fica reservado e aguarda a confirmação da barbearia.</p>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+
+<script src="/js/agendar.js"></script>

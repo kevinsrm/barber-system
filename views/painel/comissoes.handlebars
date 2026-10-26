@@ -1,0 +1,69 @@
+<div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-5">
+    <div>
+        <p class="text-[11px] font-semibold uppercase tracking-widest text-amber-500">Minha área</p>
+        <h2 class="text-xl sm:text-2xl font-bold text-white">Minhas comissões</h2>
+        <p class="text-sm text-zinc-500 mt-0.5">De {{data inicio}} a {{data fim}} · {{numero resumo.percentual 0}}% sobre serviços concluídos e vendas.</p>
+    </div>
+</div>
+
+{{> admin/filtro-periodo}}
+
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
+    <div class="cartao p-4">
+        <p class="text-[11px] uppercase tracking-wider text-zinc-500">Atendimentos</p>
+        <p class="text-xl font-bold text-white mt-1">{{resumo.atendimentos}}</p>
+    </div>
+    <div class="cartao p-4">
+        <p class="text-[11px] uppercase tracking-wider text-zinc-500">Serviços</p>
+        <p class="text-xl font-bold text-white mt-1">{{moeda resumo.totalServicos}}</p>
+    </div>
+    <div class="cartao p-4">
+        <p class="text-[11px] uppercase tracking-wider text-zinc-500">Vendas</p>
+        <p class="text-xl font-bold text-white mt-1">{{moeda resumo.totalVendas}}</p>
+    </div>
+    <div class="cartao p-4 border-amber-500/30">
+        <p class="text-[11px] uppercase tracking-wider text-zinc-500">Comissão</p>
+        <p class="text-xl font-black text-amber-400 mt-1">{{moeda resumo.valorComissao}}</p>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
+    <section class="xl:col-span-2 cartao overflow-hidden">
+        <div class="cartao-cabecalho"><h3 class="font-semibold text-white">Atendimentos concluídos</h3></div>
+        <div class="overflow-x-auto">
+            <table class="tabela min-w-[560px]">
+                <thead><tr><th>Data</th><th>Cliente</th><th>Serviços</th><th class="numero">Valor</th></tr></thead>
+                <tbody>
+                    {{#each agendamentos}}
+                    <tr>
+                        <td>{{data data}} {{hora hora}}</td>
+                        <td class="text-zinc-100">{{cliente.nome}}</td>
+                        <td class="text-xs text-zinc-500">{{#each itens}}{{nomeServico}}{{#unless @last}} · {{/unless}}{{/each}}</td>
+                        <td class="numero font-semibold">{{moeda valorTotal}}</td>
+                    </tr>
+                    {{else}}
+                    <tr><td colspan="4"><div class="tabela-vazia">Nenhum atendimento concluído no período.</div></td></tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="cartao overflow-hidden h-fit">
+        <div class="cartao-cabecalho"><h3 class="font-semibold text-white">Vendas de produtos</h3></div>
+        <ul class="divide-y divide-zinc-800">
+            {{#each vendas}}
+            <li class="px-4 py-3 flex items-center justify-between gap-2">
+                <span class="text-sm text-zinc-300">{{data data}}</span>
+                <span class="text-sm font-semibold text-amber-400">{{moeda valorTotal}}</span>
+            </li>
+            {{else}}
+            <li class="tabela-vazia">Nenhuma venda no período.</li>
+            {{/each}}
+        </ul>
+    </section>
+</div>
+
+<p class="text-xs text-zinc-500 mt-4">
+    <i class="bi bi-info-circle"></i> A comissão é calculada automaticamente sobre atendimentos com status <strong>Concluído</strong> e vendas vinculadas a você.
+</p>

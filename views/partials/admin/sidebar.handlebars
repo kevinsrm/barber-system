@@ -1,0 +1,94 @@
+<div class="sticky top-0 bg-zinc-950/95 backdrop-blur z-10">
+    <div class="p-4 border-b border-zinc-800 flex items-center justify-between gap-3">
+        <a href="/" class="flex items-center gap-3 min-w-0">
+            {{#if site.logo}}
+                <img src="{{site.logo}}" alt="Logo {{site.nome}}" class="h-10 w-auto max-w-[120px] object-contain">
+            {{else}}
+                <span class="w-10 h-10 shrink-0 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+                    <i class="bi bi-scissors text-lg"></i>
+                </span>
+            {{/if}}
+            <span class="min-w-0">
+                <span class="block font-black text-sm text-white truncate">{{site.nome}}</span>
+                <span class="block text-[10px] uppercase tracking-widest text-zinc-500 truncate">Painel</span>
+            </span>
+        </a>
+        <a href="/" target="_blank" rel="noopener" class="w-8 h-8 rounded-lg border border-zinc-800 text-zinc-400 hover:text-amber-400 hover:border-amber-500/40 flex items-center justify-center shrink-0" title="Abrir o site">
+            <i class="bi bi-box-arrow-up-right text-xs"></i>
+        </a>
+    </div>
+</div>
+
+<nav class="p-3 pb-6 space-y-5" aria-label="Menu do painel">
+    {{#if (eq usuario.role 'barbeiro')}}
+        <!-- Menu do barbeiro -->
+        <div class="space-y-1">
+            <p class="px-3 pb-1 text-[10px] font-semibold uppercase tracking-widest text-zinc-600">Minha área</p>
+            {{> admin/item-menu href="/painel" icone="bi-calendar-week" rotulo="Minha agenda" ativo=(eq paginaAtiva 'painel-agenda')}}
+            {{> admin/item-menu href="/painel/comissoes" icone="bi-cash-coin" rotulo="Minhas comissões" ativo=(eq paginaAtiva 'painel-comissoes')}}
+            {{> admin/item-menu href="/painel/horarios" icone="bi-clock-history" rotulo="Meus horários" ativo=(eq paginaAtiva 'painel-horarios')}}
+        </div>
+        <div class="space-y-1 border-t border-zinc-800 pt-4">
+            {{> admin/item-menu href="/" icone="bi-globe2" rotulo="Ver site"}}
+            {{> admin/item-menu href="/logout" icone="bi-box-arrow-right" rotulo="Sair"}}
+        </div>
+    {{else}}
+        <!-- Menu do administrador -->
+        <div class="space-y-1">
+            {{> admin/item-menu href="/admin" icone="bi-speedometer2" rotulo="Dashboard" ativo=(eq paginaAtiva 'dashboard')}}
+            {{> admin/item-menu href="/admin/agendamentos" icone="bi-calendar2-week" rotulo="Agendamentos" ativo=(eq paginaAtiva 'agendamentos')}}
+        </div>
+
+        <div class="space-y-1">
+            <p class="px-3 pb-1 text-[10px] font-semibold uppercase tracking-widest text-zinc-600">Pessoas</p>
+            {{> admin/item-menu href="/admin/clientes" icone="bi-people" rotulo="Clientes" ativo=(eq paginaAtiva 'clientes')}}
+            {{> admin/item-menu href="/admin/clientes-retorno" icone="bi-arrow-repeat" rotulo="Retorno de clientes" ativo=(eq paginaAtiva 'clientes-retorno')}}
+            {{> admin/item-menu href="/admin/funcionarios" icone="bi-person-badge" rotulo="Funcionários" ativo=(eq paginaAtiva 'funcionarios')}}
+            {{> admin/item-menu href="/admin/usuarios" icone="bi-person-gear" rotulo="Usuários" ativo=(eq paginaAtiva 'usuarios')}}
+            {{> admin/item-menu href="/admin/cargos" icone="bi-diagram-3" rotulo="Cargos" ativo=(eq paginaAtiva 'cargos')}}
+            {{> admin/item-menu href="/admin/acessos" icone="bi-shield-lock" rotulo="Acessos" ativo=(eq paginaAtiva 'acessos')}}
+            {{> admin/item-menu href="/admin/fornecedores" icone="bi-truck" rotulo="Fornecedores" ativo=(eq paginaAtiva 'fornecedores')}}
+        </div>
+
+        <div class="space-y-1">
+            <p class="px-3 pb-1 text-[10px] font-semibold uppercase tracking-widest text-zinc-600">Catálogo</p>
+            {{> admin/item-menu href="/admin/servicos" icone="bi-scissors" rotulo="Serviços" ativo=(eq paginaAtiva 'servicos')}}
+            {{> admin/item-menu href="/admin/categorias-servico" icone="bi-tags" rotulo="Categorias de serviço" ativo=(eq paginaAtiva 'categorias-servico')}}
+            {{> admin/item-menu href="/admin/produtos" icone="bi-box-seam" rotulo="Produtos" ativo=(eq paginaAtiva 'produtos')}}
+            {{> admin/item-menu href="/admin/categorias-produto" icone="bi-collection" rotulo="Categorias de produto" ativo=(eq paginaAtiva 'categorias-produto')}}
+        </div>
+
+        <div class="space-y-1">
+            <p class="px-3 pb-1 text-[10px] font-semibold uppercase tracking-widest text-zinc-600">Estoque</p>
+            {{> admin/item-menu href="/admin/estoque-baixo" icone="bi-exclamation-triangle" rotulo="Estoque baixo" ativo=(eq paginaAtiva 'estoque-baixo')}}
+            {{> admin/item-menu href="/admin/movimentos" icone="bi-arrow-down-up" rotulo="Entradas e saídas" ativo=(eq paginaAtiva 'movimentos')}}
+        </div>
+
+        <div class="space-y-1">
+            <p class="px-3 pb-1 text-[10px] font-semibold uppercase tracking-widest text-zinc-600">Financeiro</p>
+            {{> admin/item-menu href="/admin/vendas" icone="bi-bag-check" rotulo="Vendas" ativo=(eq paginaAtiva 'vendas')}}
+            {{> admin/item-menu href="/admin/compras" icone="bi-cart-plus" rotulo="Compras" ativo=(eq paginaAtiva 'compras')}}
+            {{> admin/item-menu href="/admin/contas-pagar" icone="bi-arrow-down-circle" rotulo="Contas a pagar" ativo=(eq paginaAtiva 'contas-pagar')}}
+            {{> admin/item-menu href="/admin/contas-receber" icone="bi-arrow-up-circle" rotulo="Contas a receber" ativo=(eq paginaAtiva 'contas-receber')}}
+            {{> admin/item-menu href="/admin/comissoes" icone="bi-percent" rotulo="Comissões" ativo=(eq paginaAtiva 'comissoes')}}
+        </div>
+
+        <div class="space-y-1">
+            <p class="px-3 pb-1 text-[10px] font-semibold uppercase tracking-widest text-zinc-600">Análises</p>
+            {{> admin/item-menu href="/admin/relatorios" icone="bi-file-earmark-bar-graph" rotulo="Relatórios" ativo=(eq paginaAtiva 'relatorios')}}
+        </div>
+
+        <div class="space-y-1">
+            <p class="px-3 pb-1 text-[10px] font-semibold uppercase tracking-widest text-zinc-600">Site</p>
+            {{> admin/item-menu href="/admin/configuracoes" icone="bi-gear" rotulo="Configurações" ativo=(eq paginaAtiva 'configuracoes')}}
+            {{> admin/item-menu href="/admin/comentarios" icone="bi-chat-quote" rotulo="Depoimentos" ativo=(eq paginaAtiva 'comentarios')}}
+        </div>
+
+        <div class="space-y-1 border-t border-zinc-800 pt-4">
+            {{> admin/item-menu href="/" icone="bi-globe2" rotulo="Ver site"}}
+            {{> admin/item-menu href="/logout" icone="bi-box-arrow-right" rotulo="Sair"}}
+        </div>
+    {{/if}}
+
+    <p class="px-3 pt-2 text-[10px] text-zinc-600">Sistema v1.0 · {{anoAtual}}</p>
+</nav>

@@ -1,0 +1,14 @@
+# Dependências
+node_modules/
+
+# Variáveis de ambiente (NUNCA subir o .env)
+.env
+
+# Uploads feitos pelo painel (mantém apenas o .gitkeep)
+public/uploads/*
+!public/uploads/.gitkeep
+
+# Logs e arquivos temporários
+*.log
+npm-debug.log*
+.DS_Store

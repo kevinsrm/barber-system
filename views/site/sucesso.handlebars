@@ -1,0 +1,57 @@
+<section class="py-12 sm:py-20 bg-zinc-950">
+    <div class="max-w-2xl mx-auto px-4 sm:px-6">
+        <div class="cartao p-6 sm:p-8 text-center">
+            <span class="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center mx-auto mb-4">
+                <i class="bi bi-check2-circle text-3xl"></i>
+            </span>
+            <p class="text-[11px] font-semibold uppercase tracking-widest text-emerald-400">Agendamento solicitado</p>
+            <h1 class="text-2xl sm:text-3xl font-black text-white mt-1">Horário reservado com sucesso!</h1>
+            <p class="text-sm text-zinc-400 mt-2">Guarde os dados abaixo. A barbearia confirmará seu atendimento pelo WhatsApp.</p>
+
+            <div class="text-left mt-6 rounded-xl border border-zinc-800 bg-zinc-950 p-4 sm:p-5 space-y-3 text-sm">
+                <div class="flex items-center justify-between gap-3">
+                    <span class="text-zinc-500"><i class="bi bi-calendar-event mr-1"></i> Data e hora</span>
+                    <span class="font-semibold text-zinc-100">{{dataLonga agendamento.data}} às {{hora agendamento.hora}}</span>
+                </div>
+                <div class="flex items-center justify-between gap-3">
+                    <span class="text-zinc-500"><i class="bi bi-person-badge mr-1"></i> Profissional</span>
+                    <span class="font-semibold text-zinc-100">{{funcionario.nome}}</span>
+                </div>
+                <div class="flex items-start justify-between gap-3">
+                    <span class="text-zinc-500"><i class="bi bi-scissors mr-1"></i> Serviços</span>
+                    <span class="font-medium text-zinc-100 text-right">
+                        {{#each servicos}}{{nome}}{{#unless @last}}<br>{{/unless}}{{/each}}
+                    </span>
+                </div>
+                <div class="flex items-center justify-between gap-3">
+                    <span class="text-zinc-500"><i class="bi bi-person mr-1"></i> Cliente</span>
+                    <span class="font-medium text-zinc-100">{{cliente.nome}}</span>
+                </div>
+                <div class="flex items-center justify-between gap-3">
+                    <span class="text-zinc-500"><i class="bi bi-telephone mr-1"></i> WhatsApp</span>
+                    <span class="font-medium text-zinc-100">{{#if cliente.telefone}}{{cliente.telefone}}{{else}}—{{/if}}</span>
+                </div>
+                <div class="flex items-center justify-between gap-3 pt-3 border-t border-zinc-800">
+                    <span class="text-zinc-400 font-medium">Total estimado</span>
+                    <span class="text-lg font-black text-amber-400">{{moeda agendamento.valorTotal}}</span>
+                </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-2 mt-6">
+                {{#if whatsappLink}}
+                <a href="{{whatsappLink}}" target="_blank" rel="noopener" class="botao botao-secundario flex-1"><i class="bi bi-whatsapp text-emerald-400"></i> Falar no WhatsApp</a>
+                {{/if}}
+                <a href="/agendar" class="botao botao-primario flex-1"><i class="bi bi-calendar-plus"></i> Agendar outro horário</a>
+            </div>
+
+            <a href="/" class="inline-flex items-center gap-1 text-xs text-zinc-500 hover:text-amber-400 mt-5">
+                <i class="bi bi-arrow-left"></i> Voltar para a página inicial
+            </a>
+        </div>
+
+        <p class="text-xs text-zinc-500 text-center mt-4">
+            <i class="bi bi-info-circle"></i>
+            Se precisar remarcar, entre em contato com a barbearia{{#if site.telefone}} pelo telefone {{site.telefone}}{{/if}}.
+        </p>
+    </div>
+</section>

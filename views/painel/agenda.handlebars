@@ -1,0 +1,118 @@
+<!-- Cabeçalho -->
+<div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-5">
+    <div>
+        <p class="text-[11px] font-semibold uppercase tracking-widest text-amber-500">Minha área</p>
+        <h2 class="text-xl sm:text-2xl font-bold text-white">Minha agenda</h2>
+        <p class="text-sm text-zinc-500 mt-0.5">{{dataLonga data}}</p>
+    </div>
+    <form method="GET" action="/painel" class="flex items-end gap-2">
+        <div>
+            <label for="data" class="rotulo">Escolher dia</label>
+            <input type="date" id="data" name="data" value="{{data}}" class="campo">
+        </div>
+        <button type="submit" class="botao botao-secundario"><i class="bi bi-search"></i></button>
+    </form>
+</div>
+
+<!-- Resumo do dia -->
+<div class="grid grid-cols-2 lg:grid-cols-5 gap-3 mb-4">
+    <div class="cartao p-3">
+        <p class="text-[11px] uppercase tracking-wider text-zinc-500">Atendimentos</p>
+        <p class="text-xl font-bold text-white">{{resumo.total}}</p>
+    </div>
+    <div class="cartao p-3">
+        <p class="text-[11px] uppercase tracking-wider text-zinc-500">Pendentes</p>
+        <p class="text-xl font-bold text-amber-400">{{resumo.pendentes}}</p>
+    </div>
+    <div class="cartao p-3">
+        <p class="text-[11px] uppercase tracking-wider text-zinc-500">Confirmados</p>
+        <p class="text-xl font-bold text-sky-400">{{resumo.confirmados}}</p>
+    </div>
+    <div class="cartao p-3">
+        <p class="text-[11px] uppercase tracking-wider text-zinc-500">Concluídos</p>
+        <p class="text-xl font-bold text-emerald-400">{{resumo.concluidos}}</p>
+    </div>
+    <div class="cartao p-3 col-span-2 lg:col-span-1">
+        <p class="text-[11px] uppercase tracking-wider text-zinc-500">Faturado</p>
+        <p class="text-xl font-bold text-white">{{moeda resumo.faturamento}}</p>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
+    <!-- Atendimentos do dia -->
+    <section class="xl:col-span-2 space-y-3">
+        {{#each agendamentos}}
+        <article class="cartao p-4">
+            <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+                <div class="w-16 shrink-0 rounded-xl bg-zinc-950 border border-zinc-800 text-center py-2">
+                    <span class="block text-base font-black text-amber-400">{{hora hora}}</span>
+                    <span class="block text-[10px] text-zinc-500 uppercase">{{dataLonga data}}</span>
+                </div>
+
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-start justify-between gap-2">
+                        <p class="font-semibold text-zinc-100 truncate">{{cliente.nome}}</p>
+                        <span class="selo {{corStatus status}}">{{rotuloStatus status}}</span>
+                    </div>
+                    <p class="text-xs text-zinc-500 mt-1 truncate">
+                        {{#each itens}}{{nomeServico}}{{#unless @last}} · {{/unless}}{{/each}}
+                    </p>
+                    <p class="text-xs text-zinc-500 mt-1">
+                        {{#if cliente.telefone}}<i class="bi bi-whatsapp text-emerald-500"></i>
+                        <a href="https://wa.me/55{{digitos cliente.telefone}}" target="_blank" rel="noopener" class="hover:text-emerald-400">{{cliente.telefone}}</a>{{/if}}
+                        <span class="ml-2 font-semibold text-amber-400">{{moeda valorTotal}}</span>
+                    </p>
+                    {{#if observacoes}}<p class="text-xs text-zinc-600 italic mt-1"><i class="bi bi-chat-left-text"></i> {{observacoes}}</p>{{/if}}
+                </div>
+            </div>
+
+            {{#unless (eq status 'cancelado')}}
+            {{#unless (eq status 'concluido')}}
+            <div class="flex flex-wrap gap-2 mt-3 pt-3 border-t border-zinc-800">
+                {{#if (eq status 'pendente')}}
+                <form method="POST" action="/painel/agendamentos/{{id}}/status">
+                    <input type="hidden" name="status" value="confirmado">
+                    <button type="submit" class="botao botao-secundario botao-mini"><i class="bi bi-check2-circle text-sky-400"></i> Confirmar</button>
+                </form>
+                {{/if}}
+                <form method="POST" action="/painel/agendamentos/{{id}}/status">
+                    <input type="hidden" name="status" value="concluido">
+                    <button type="submit" class="botao botao-primario botao-mini"><i class="bi bi-check2-all"></i> Concluir atendimento</button>
+                </form>
+                <form method="POST" action="/painel/agendamentos/{{id}}/status" data-confirmar="Cancelar este agendamento?">
+                    <input type="hidden" name="status" value="cancelado">
+                    <button type="submit" class="botao botao-perigo botao-mini"><i class="bi bi-x-circle"></i> Cancelar</button>
+                </form>
+            </div>
+            {{/unless}}
+            {{/unless}}
+        </article>
+        {{else}}
+        <div class="cartao p-8 text-center">
+            <i class="bi bi-cup-hot text-3xl text-zinc-600 block mb-2"></i>
+            <p class="text-sm text-zinc-400">Nenhum atendimento para este dia.</p>
+            <p class="text-xs text-zinc-500 mt-1">Escolha outra data acima ou aguarde novos agendamentos.</p>
+        </div>
+        {{/each}}
+    </section>
+
+    <!-- Próximos -->
+    <section class="cartao overflow-hidden h-fit">
+        <div class="cartao-cabecalho">
+            <h3 class="font-semibold text-white">Próximos atendimentos</h3>
+            <p class="text-xs text-zinc-500">Depois de {{data data}}</p>
+        </div>
+        {{#if proximos.length}}
+        <ul class="divide-y divide-zinc-800">
+            {{#each proximos}}
+            <li class="px-4 py-3">
+                <p class="text-sm text-zinc-100 truncate">{{cliente.nome}}</p>
+                <p class="text-xs text-zinc-500">{{data data}} às {{hora hora}}</p>
+            </li>
+            {{/each}}
+        </ul>
+        {{else}}
+        <p class="tabela-vazia">Nenhum agendamento futuro.</p>
+        {{/if}}
+    </section>
+</div>

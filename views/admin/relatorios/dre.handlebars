@@ -1,0 +1,51 @@
+<div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-5">
+    <div>
+        <p class="text-[11px] font-semibold uppercase tracking-widest text-amber-500">Relatórios</p>
+        <h2 class="text-xl sm:text-2xl font-bold text-white">DRE simplificado</h2>
+        <p class="text-sm text-zinc-500 mt-0.5">De {{data inicio}} a {{data fim}}</p>
+    </div>
+    <div class="flex gap-2 nao-imprimir">
+        <a href="/admin/relatorios" class="botao botao-secundario"><i class="bi bi-arrow-left"></i> Voltar</a>
+        <button type="button" onclick="window.print()" class="botao botao-secundario"><i class="bi bi-printer"></i> Imprimir</button>
+    </div>
+</div>
+
+{{> admin/filtro-periodo}}
+
+<div class="max-w-2xl space-y-4">
+    <div class="cartao overflow-hidden cartao-impressao">
+        <div class="cartao-cabecalho"><h3 class="font-semibold text-white">Receitas</h3></div>
+        <ul class="divide-y divide-zinc-800 text-sm">
+            <li class="flex justify-between px-5 py-3"><span class="text-zinc-400">Serviços concluídos ({{resumo.atendimentosConcluidos}} atendimentos)</span><span class="text-zinc-100 font-medium">{{moeda resumo.receitaServicos}}</span></li>
+            <li class="flex justify-between px-5 py-3"><span class="text-zinc-400">Vendas de produtos ({{resumo.vendasRealizadas}} vendas)</span><span class="text-zinc-100 font-medium">{{moeda resumo.receitaProdutos}}</span></li>
+            <li class="flex justify-between px-5 py-3"><span class="text-zinc-400">Outras contas recebidas</span><span class="text-zinc-100 font-medium">{{moeda resumo.outrasReceitas}}</span></li>
+            <li class="flex justify-between px-5 py-3 bg-zinc-950/40"><span class="font-semibold text-zinc-200">Receita total</span><span class="font-bold text-emerald-400">{{moeda resumo.receitaTotal}}</span></li>
+        </ul>
+    </div>
+
+    <div class="cartao overflow-hidden cartao-impressao">
+        <div class="cartao-cabecalho"><h3 class="font-semibold text-white">Custos e despesas</h3></div>
+        <ul class="divide-y divide-zinc-800 text-sm">
+            <li class="flex justify-between px-5 py-3"><span class="text-zinc-400">Compras de produtos</span><span class="text-zinc-100 font-medium">{{moeda resumo.custoCompras}}</span></li>
+            <li class="flex justify-between px-5 py-3"><span class="text-zinc-400">Contas pagas</span><span class="text-zinc-100 font-medium">{{moeda resumo.despesasContas}}</span></li>
+            <li class="flex justify-between px-5 py-3"><span class="text-zinc-400">Comissões dos barbeiros</span><span class="text-zinc-100 font-medium">{{moeda resumo.totalComissoes}}</span></li>
+            <li class="flex justify-between px-5 py-3 bg-zinc-950/40"><span class="font-semibold text-zinc-200">Despesa total</span><span class="font-bold text-rose-300">{{moeda resumo.despesaTotal}}</span></li>
+        </ul>
+    </div>
+
+    <div class="cartao p-5 cartao-impressao {{#if (gte resumo.lucro 0)}}border-emerald-500/40{{else}}border-rose-500/40{{/if}}">
+        <div class="flex items-end justify-between gap-3">
+            <div>
+                <p class="text-xs uppercase tracking-wider text-zinc-500">Resultado do período</p>
+                <p class="text-sm text-zinc-400 mt-1">Receitas menos custos, despesas e comissões.</p>
+            </div>
+            <p class="text-2xl sm:text-3xl font-black {{#if (gte resumo.lucro 0)}}text-emerald-400{{else}}text-rose-400{{/if}}">{{moeda resumo.lucro}}</p>
+        </div>
+    </div>
+
+    <p class="text-xs text-zinc-500">
+        <i class="bi bi-info-circle"></i>
+        Este é um DRE simplificado. Para não duplicar valores, não lance a mesma venda/serviço também como conta a receber,
+        nem a mesma comissão como conta a pagar.
+    </p>
+</div>

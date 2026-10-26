@@ -1,0 +1,60 @@
+<div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-5">
+    <div>
+        <p class="text-[11px] font-semibold uppercase tracking-widest text-amber-500">Relatórios</p>
+        <h2 class="text-xl sm:text-2xl font-bold text-white">Aniversariantes do mês</h2>
+        <p class="text-sm text-zinc-500 mt-0.5">{{clientes.length}} cliente(s) fazem aniversário.</p>
+    </div>
+    <div class="flex gap-2 nao-imprimir">
+        <a href="/admin/relatorios" class="botao botao-secundario"><i class="bi bi-arrow-left"></i> Voltar</a>
+        <button type="button" onclick="window.print()" class="botao botao-secundario"><i class="bi bi-printer"></i> Imprimir</button>
+    </div>
+</div>
+
+<form method="GET" action="/admin/relatorios/aniversariantes" class="cartao p-4 mb-4 flex flex-col sm:flex-row sm:items-end gap-3 sm:max-w-md nao-imprimir">
+    <div class="flex-1">
+        <label for="mes" class="rotulo">Mês</label>
+        <select id="mes" name="mes" class="campo-select">
+            {{#each meses}}
+            <option value="{{soma @index 1}}" {{#if (eq ../mes (soma @index 1))}}selected{{/if}}>{{this}}</option>
+            {{/each}}
+        </select>
+    </div>
+    <button type="submit" class="botao botao-secundario"><i class="bi bi-funnel"></i> Filtrar</button>
+</form>
+
+<div class="cartao overflow-hidden cartao-impressao">
+    <div class="overflow-x-auto">
+        <table class="tabela min-w-[720px]">
+            <thead>
+                <tr>
+                    <th>Dia</th>
+                    <th>Cliente</th>
+                    <th>WhatsApp</th>
+                    <th>E-mail</th>
+                    <th class="numero">Idade</th>
+                    <th class="text-right nao-imprimir">Ação</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each clientes}}
+                <tr>
+                    <td class="font-bold text-amber-400">{{dia}}</td>
+                    <td class="text-zinc-100">{{nome}}</td>
+                    <td>{{telefone}}</td>
+                    <td>{{#if email}}{{email}}{{else}}—{{/if}}</td>
+                    <td class="numero">{{idade}}</td>
+                    <td class="text-right nao-imprimir">
+                        {{#if telefone}}
+                        <a href="https://wa.me/55{{digitos telefone}}" target="_blank" rel="noopener" class="botao botao-secundario botao-mini">
+                            <i class="bi bi-whatsapp text-emerald-400"></i> Parabenizar
+                        </a>
+                        {{/if}}
+                    </td>
+                </tr>
+                {{else}}
+                <tr><td colspan="6"><div class="tabela-vazia">Nenhum aniversariante neste mês.</div></td></tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,17 @@
+{{#if flash}}
+<div data-flash class="fixed top-4 right-4 z-[60] w-[calc(100%-2rem)] sm:w-auto sm:max-w-sm">
+    <div class="flex items-start gap-3 rounded-xl border bg-zinc-900/95 backdrop-blur p-4 shadow-2xl
+        {{#if (eq flash.tipo 'sucesso')}}border-emerald-500/40 text-emerald-200
+        {{else if (eq flash.tipo 'erro')}}border-rose-500/40 text-rose-200
+        {{else}}border-sky-500/40 text-sky-200{{/if}}">
+        <i class="bi text-lg
+            {{#if (eq flash.tipo 'sucesso')}}bi-check-circle
+            {{else if (eq flash.tipo 'erro')}}bi-exclamation-triangle
+            {{else}}bi-info-circle{{/if}}"></i>
+        <p class="text-sm leading-snug">{{flash.mensagem}}</p>
+        <button type="button" onclick="this.closest('[data-flash]').remove()" class="ml-auto text-zinc-500 hover:text-zinc-200" aria-label="Fechar">
+            <i class="bi bi-x-lg text-xs"></i>
+        </button>
+    </div>
+</div>
+{{/if}}

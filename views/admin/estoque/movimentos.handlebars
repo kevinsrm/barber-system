@@ -1,0 +1,62 @@
+<div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-5">
+    <div>
+        <p class="text-[11px] font-semibold uppercase tracking-widest text-amber-500">Estoque</p>
+        <h2 class="text-xl sm:text-2xl font-bold text-white">Entradas e saídas</h2>
+        <p class="text-sm text-zinc-500 mt-0.5">Histórico das últimas 100 movimentações.</p>
+    </div>
+    <a href="/admin/movimentos/novo" class="botao botao-primario"><i class="bi bi-plus-lg"></i> Nova movimentação</a>
+</div>
+
+<form method="GET" action="/admin/movimentos" class="cartao p-4 mb-4 flex flex-col sm:flex-row gap-3 items-end sm:max-w-md">
+    <div class="flex-1">
+        <label for="tipo" class="rotulo">Tipo</label>
+        <select id="tipo" name="tipo" class="campo-select">
+            <option value="">Todos</option>
+            <option value="entrada" {{#if (eq tipo 'entrada')}}selected{{/if}}>Entradas</option>
+            <option value="saida" {{#if (eq tipo 'saida')}}selected{{/if}}>Saídas</option>
+        </select>
+    </div>
+    <button type="submit" class="botao botao-secundario"><i class="bi bi-funnel"></i> Filtrar</button>
+</form>
+
+<div class="cartao overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="tabela min-w-[640px]">
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Produto</th>
+                    <th>Tipo</th>
+                    <th class="numero">Quantidade</th>
+                    <th>Motivo</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each movimentos}}
+                <tr>
+                    <td>{{data data}}</td>
+                    <td class="font-medium text-zinc-100">{{#if produto}}{{produto.nome}}{{else}}Produto removido{{/if}}</td>
+                    <td>
+                        {{#if (eq tipo 'entrada')}}
+                        <span class="selo selo-verde"><i class="bi bi-arrow-down-circle"></i> Entrada</span>
+                        {{else}}
+                        <span class="selo selo-vermelho"><i class="bi bi-arrow-up-circle"></i> Saída</span>
+                        {{/if}}
+                    </td>
+                    <td class="numero font-semibold">{{quantidade}}</td>
+                    <td class="text-zinc-400">{{#if motivo}}{{motivo}}{{else}}<span class="text-zinc-600">—</span>{{/if}}</td>
+                </tr>
+                {{else}}
+                <tr>
+                    <td colspan="5">
+                        <div class="tabela-vazia">
+                            <i class="bi bi-inboxes text-3xl block mb-2 text-zinc-600"></i>
+                            Nenhuma movimentação registrada ainda.
+                        </div>
+                    </td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
+</div>

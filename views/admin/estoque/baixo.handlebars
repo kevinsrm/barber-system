@@ -1,0 +1,64 @@
+<div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-5">
+    <div>
+        <p class="text-[11px] font-semibold uppercase tracking-widest text-amber-500">Estoque</p>
+        <h2 class="text-xl sm:text-2xl font-bold text-white">Estoque baixo</h2>
+        <p class="text-sm text-zinc-500 mt-0.5">Produtos com quantidade igual ou abaixo do mínimo definido.</p>
+    </div>
+    <div class="flex gap-2">
+        <a href="/admin/movimentos/novo" class="botao botao-secundario"><i class="bi bi-arrow-down-up"></i> Movimentar</a>
+        <a href="/admin/produtos" class="botao botao-primario"><i class="bi bi-box-seam"></i> Produtos</a>
+    </div>
+</div>
+
+<div class="cartao overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="tabela min-w-[700px]">
+            <thead>
+                <tr>
+                    <th>Produto</th>
+                    <th>Categoria</th>
+                    <th class="numero">Estoque</th>
+                    <th class="numero">Mínimo</th>
+                    <th>Situação</th>
+                    <th class="text-right">Ação</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each produtos}}
+                <tr>
+                    <td class="font-medium text-zinc-100">{{nome}}</td>
+                    <td>{{#if categoria}}{{categoria.nome}}{{else}}<span class="text-zinc-600">—</span>{{/if}}</td>
+                    <td class="numero font-bold text-rose-300">{{estoque}}</td>
+                    <td class="numero">{{estoqueMinimo}}</td>
+                    <td>
+                        {{#if (eq estoque 0)}}
+                        <span class="selo selo-vermelho"><i class="bi bi-x-circle"></i> Sem estoque</span>
+                        {{else}}
+                        <span class="selo selo-ambar"><i class="bi bi-exclamation-triangle"></i> Repor</span>
+                        {{/if}}
+                    </td>
+                    <td class="text-right">
+                        <a href="/admin/movimentos/novo?produto={{id}}" class="botao botao-secundario botao-mini">
+                            <i class="bi bi-plus-lg"></i> Entrada
+                        </a>
+                    </td>
+                </tr>
+                {{else}}
+                <tr>
+                    <td colspan="6">
+                        <div class="tabela-vazia">
+                            <i class="bi bi-check2-circle text-3xl block mb-2 text-emerald-500"></i>
+                            Tudo certo! Nenhum produto com estoque baixo.
+                        </div>
+                    </td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<p class="text-xs text-zinc-500 mt-3">
+    <i class="bi bi-info-circle"></i>
+    O alerta considera o estoque mínimo cadastrado em cada produto (menu Produtos).
+</p>

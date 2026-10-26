@@ -1,0 +1,125 @@
+<section class="bg-zinc-950 border-b border-zinc-800">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 py-10 sm:py-12">
+        <p class="text-[11px] font-semibold uppercase tracking-widest text-amber-500">Área do cliente</p>
+        <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mt-1">
+            <div>
+                <h1 class="text-2xl sm:text-3xl font-black text-white">Minhas reservas</h1>
+                <p class="text-sm text-zinc-400 mt-1">Olá, {{usuario.nome}}. Acompanhe e cancele seus horários por aqui.</p>
+            </div>
+            <a href="/agendar" class="botao botao-primario"><i class="bi bi-calendar-plus"></i> Novo agendamento</a>
+        </div>
+    </div>
+</section>
+
+<section class="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-10 space-y-8">
+
+    <!-- Dados do cliente -->
+    {{#if cliente}}
+    <div class="cartao p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div class="flex items-center gap-3">
+            <span class="w-11 h-11 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 font-bold flex items-center justify-center">{{iniciais cliente.nome}}</span>
+            <div>
+                <p class="text-sm font-semibold text-zinc-100">{{cliente.nome}}</p>
+                <p class="text-xs text-zinc-500">{{#if cliente.email}}{{cliente.email}}{{/if}}{{#if cliente.telefone}} · {{cliente.telefone}}{{/if}}</p>
+            </div>
+        </div>
+        <a href="/logout" class="text-xs text-zinc-500 hover:text-rose-400 inline-flex items-center gap-1.5"><i class="bi bi-box-arrow-right"></i> Sair da conta</a>
+    </div>
+    {{/if}}
+
+    <!-- Próximos horários -->
+    <div>
+        <h2 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
+            <i class="bi bi-calendar-check text-amber-500"></i> Próximos horários
+        </h2>
+
+        {{#if proximos.length}}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {{#each proximos}}
+            <article class="cartao overflow-hidden">
+                <div class="p-4 sm:p-5 flex gap-4">
+                    <div class="w-16 shrink-0 rounded-xl bg-amber-500/10 border border-amber-500/20 text-center py-2">
+                        <span class="block text-lg font-black text-amber-400 leading-tight">{{hora hora}}</span>
+                        <span class="block text-[10px] uppercase tracking-wider text-amber-500/80">{{data data}}</span>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-start justify-between gap-2">
+                            <p class="text-sm font-semibold text-zinc-100">{{funcionario.nome}}</p>
+                            <span class="selo {{corStatus status}}">{{rotuloStatus status}}</span>
+                        </div>
+                        <p class="text-xs text-zinc-500 mt-1">
+                            {{#each itens}}{{nomeServico}}{{#unless @last}} · {{/unless}}{{/each}}
+                        </p>
+                        <p class="text-sm font-bold text-amber-400 mt-2">{{moeda valorTotal}}</p>
+                    </div>
+                </div>
+                <div class="px-4 sm:px-5 py-3 border-t border-zinc-800 flex items-center justify-between gap-2">
+                    <span class="text-xs text-zinc-500"><i class="bi bi-clock"></i> Chegue com 5 min de antecedência</span>
+                    {{#if podeCancelar}}
+                    <form method="POST" action="/minhas-reservas/{{id}}/cancelar" data-confirmar="Deseja cancelar este agendamento?">
+                        <button type="submit" class="botao botao-perigo botao-mini"><i class="bi bi-x-circle"></i> Cancelar</button>
+                    </form>
+                    {{/if}}
+                </div>
+            </article>
+            {{/each}}
+        </div>
+        {{else}}
+        <div class="cartao p-8 text-center">
+            <i class="bi bi-calendar-x text-3xl text-zinc-600 block mb-2"></i>
+            <p class="text-sm text-zinc-400">Você ainda não tem horários agendados.</p>
+            <a href="/agendar" class="botao botao-primario mt-4"><i class="bi bi-calendar-plus"></i> Agendar agora</a>
+        </div>
+        {{/if}}
+    </div>
+
+    <!-- Histórico -->
+    <div>
+        <h2 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
+            <i class="bi bi-clock-history text-amber-500"></i> Histórico
+        </h2>
+
+        <div class="cartao overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="tabela min-w-[640px]">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Hora</th>
+                            <th>Barbeiro</th>
+                            <th>Serviços</th>
+                            <th class="numero">Valor</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#each historico}}
+                        <tr>
+                            <td>{{data data}}</td>
+                            <td>{{hora hora}}</td>
+                            <td>{{funcionario.nome}}</td>
+                            <td class="text-xs text-zinc-500">{{#each itens}}{{nomeServico}}{{#unless @last}} · {{/unless}}{{/each}}</td>
+                            <td class="numero">{{moeda valorTotal}}</td>
+                            <td><span class="selo {{corStatus status}}">{{rotuloStatus status}}</span></td>
+                        </tr>
+                        {{else}}
+                        <tr><td colspan="6"><div class="tabela-vazia">Nenhum atendimento no histórico ainda.</div></td></tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ajuda -->
+    <div class="cartao p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div>
+            <p class="text-sm font-semibold text-zinc-100">Precisa remarcar ou tirar uma dúvida?</p>
+            <p class="text-xs text-zinc-500 mt-1">Fale direto com a barbearia — {{site.horarioFuncionamento}}.</p>
+        </div>
+        <div class="flex gap-2">
+            {{#if whatsappLink}}<a href="{{whatsappLink}}" target="_blank" rel="noopener" class="botao botao-secundario"><i class="bi bi-whatsapp text-emerald-400"></i> WhatsApp</a>{{/if}}
+            {{#if site.telefone}}<a href="tel:{{site.telefone}}" class="botao botao-secundario"><i class="bi bi-telephone"></i> Ligar</a>{{/if}}
+        </div>
+    </div>
+</section>

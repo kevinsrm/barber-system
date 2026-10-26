@@ -1,0 +1,131 @@
+<div class="max-w-4xl mx-auto">
+    <div class="flex items-center gap-3 mb-5">
+        <a href="{{#if (eq tipo 'venda')}}/admin/vendas{{else}}/admin/compras{{/if}}" class="botao botao-icone" title="Voltar">
+            <i class="bi bi-arrow-left"></i>
+        </a>
+        <div>
+            <p class="text-[11px] font-semibold uppercase tracking-widest text-amber-500">Financeiro</p>
+            <h2 class="text-xl sm:text-2xl font-bold text-white">{{#if (eq tipo 'venda')}}Nova venda{{else}}Nova compra{{/if}}</h2>
+        </div>
+    </div>
+
+    {{#if mensagem}}
+    <div class="alerta alerta-erro mb-4"><i class="bi bi-exclamation-triangle"></i><span>{{mensagem}}</span></div>
+    {{/if}}
+
+    <form id="form-financeiro" method="POST" action="{{#if (eq tipo 'venda')}}/admin/vendas{{else}}/admin/compras{{/if}}" class="space-y-4 sm:space-y-6">
+        <!-- Dados gerais -->
+        <div class="cartao p-5 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label for="data" class="rotulo">Data <span class="text-amber-500">*</span></label>
+                <input type="date" id="data" name="data" value="{{dados.data}}" required class="campo">
+            </div>
+
+            {{#if (eq tipo 'venda')}}
+                <div>
+                    <label for="formaPagamento" class="rotulo">Forma de pagamento</label>
+                    <select id="formaPagamento" name="formaPagamento" class="campo-select">
+                        {{#each formasPagamento}}
+                        <option value="{{valor}}" {{#if (eq ../dados.formaPagamento valor)}}selected{{/if}}>{{rotulo}}</option>
+                        {{/each}}
+                    </select>
+                </div>
+                <div>
+                    <label for="clienteId" class="rotulo">Cliente (opcional)</label>
+                    <select id="clienteId" name="clienteId" class="campo-select">
+                        <option value="">Consumidor final</option>
+                        {{#each clientes}}
+                        <option value="{{id}}" {{#if (eq ../dados.clienteId id)}}selected{{/if}}>{{nome}}</option>
+                        {{/each}}
+                    </select>
+                </div>
+                <div>
+                    <label for="funcionarioId" class="rotulo">Vendedor / barbeiro (opcional)</label>
+                    <select id="funcionarioId" name="funcionarioId" class="campo-select">
+                        <option value="">Não informar</option>
+                        {{#each funcionarios}}
+                        <option value="{{id}}" {{#if (eq ../dados.funcionarioId id)}}selected{{/if}}>{{nome}}</option>
+                        {{/each}}
+                    </select>
+                </div>
+            {{else}}
+                <div>
+                    <label for="fornecedorId" class="rotulo">Fornecedor (opcional)</label>
+                    <select id="fornecedorId" name="fornecedorId" class="campo-select">
+                        <option value="">Não informar</option>
+                        {{#each fornecedores}}
+                        <option value="{{id}}" {{#if (eq ../dados.fornecedorId id)}}selected{{/if}}>{{nome}}</option>
+                        {{/each}}
+                    </select>
+                </div>
+                <div class="md:col-span-2 alerta alerta-info">
+                    <i class="bi bi-info-circle"></i>
+                    <span>Informe o preço de custo pago em cada produto. O estoque será somado automaticamente.</span>
+                </div>
+            {{/if}}
+
+            <div class="md:col-span-2">
+                <label for="observacoes" class="rotulo">Observações</label>
+                <textarea id="observacoes" name="observacoes" rows="2" class="campo-texto" placeholder="Opcional">{{dados.observacoes}}</textarea>
+            </div>
+        </div>
+
+        <!-- Itens -->
+        <div class="cartao overflow-hidden">
+            <div class="cartao-cabecalho flex items-center justify-between">
+                <h3 class="font-semibold text-white">Produtos</h3>
+                <span class="text-xs text-zinc-500">Até 5 itens por lançamento</span>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="tabela min-w-[640px]">
+                    <thead>
+                        <tr>
+                            <th>Produto</th>
+                            <th class="w-24">Qtd.</th>
+                            <th class="w-32">Preço unit.</th>
+                            <th class="w-32 text-right">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#each itens}}
+                        <tr data-linha-item>
+                            <td>
+                                <select name="produtoId" class="campo-select text-xs py-2">
+                                    <option value="">—</option>
+                                    {{#each ../produtos}}
+                                    <option value="{{id}}" data-preco="{{valorInput precoSugerido}}" {{#if (eq ../produtoId id)}}selected{{/if}}>
+                                        {{nome}} (estoque: {{estoque}})
+                                    </option>
+                                    {{/each}}
+                                </select>
+                            </td>
+                            <td>
+                                <input type="number" name="quantidade" min="1" step="1" value="{{quantidade}}" class="campo py-2 text-xs">
+                            </td>
+                            <td>
+                                <input type="number" name="precoUnitario" step="0.01" min="0" value="{{precoUnitario}}" class="campo py-2 text-xs" placeholder="0,00">
+                            </td>
+                            <td class="text-right text-xs text-zinc-400" data-subtotal>R$ 0,00</td>
+                        </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="px-5 py-4 border-t border-zinc-800 flex items-center justify-between">
+                <span class="text-sm text-zinc-500">Total</span>
+                <span class="text-xl font-black text-amber-400" id="total-preview">R$ 0,00</span>
+            </div>
+        </div>
+
+        <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
+            <a href="{{#if (eq tipo 'venda')}}/admin/vendas{{else}}/admin/compras{{/if}}" class="botao botao-secundario">Cancelar</a>
+            <button type="submit" class="botao botao-primario">
+                <i class="bi bi-check2"></i> {{#if (eq tipo 'venda')}}Registrar venda{{else}}Registrar compra{{/if}}
+            </button>
+        </div>
+    </form>
+</div>
+
+<script src="/js/financeiro-form.js"></script>
