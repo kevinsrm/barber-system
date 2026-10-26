@@ -1,0 +1,213 @@
+<!-- Boas-vindas -->
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+    <div>
+        <p class="text-[11px] font-semibold uppercase tracking-widest text-amber-500">Visão geral</p>
+        <h2 class="text-xl sm:text-2xl font-bold text-white">Olá, {{usuario.nome}}</h2>
+        <p class="text-sm text-zinc-500 mt-1">Hoje é {{dataLonga hoje}} · Resumo do mês de {{dataLonga periodo.inicio}} a {{dataLonga periodo.fim}}</p>
+    </div>
+    <div class="flex flex-wrap gap-2">
+        <a href="/admin/agendamentos/novo" class="botao botao-primario"><i class="bi bi-plus-lg"></i> Novo agendamento</a>
+        <a href="/admin/relatorios" class="botao botao-secundario"><i class="bi bi-file-earmark-bar-graph"></i> Relatórios</a>
+    </div>
+</div>
+
+<!-- Alertas -->
+{{#if comentariosPendentes}}
+<a href="/admin/comentarios" class="alerta alerta-aviso mb-3 hover:border-amber-500/60 transition">
+    <i class="bi bi-chat-quote"></i>
+    <span>Você tem <strong>{{comentariosPendentes}}</strong> depoimento(s) aguardando aprovação. Clique para revisar.</span>
+</a>
+{{/if}}
+{{#if contasVencidas}}
+<a href="/admin/contas-pagar" class="alerta alerta-erro mb-3 hover:border-rose-500/60 transition">
+    <i class="bi bi-exclamation-triangle"></i>
+    <span>Existem <strong>{{contasVencidas}}</strong> conta(s) a pagar vencida(s). Clique para ver.</span>
+</a>
+{{/if}}
+
+<!-- Indicadores rápidos -->
+<div class="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 mb-4">
+    <div class="cartao p-4">
+        <div class="flex items-center justify-between">
+            <p class="text-xs uppercase tracking-wider text-zinc-500">Agendamentos hoje</p>
+            <i class="bi bi-calendar2-week text-amber-500"></i>
+        </div>
+        <p class="text-2xl sm:text-3xl font-black text-white mt-2">{{contagens.hoje}}</p>
+        <a href="/admin/agendamentos" class="text-xs text-amber-500 hover:text-amber-400 mt-1 inline-flex items-center gap-1">Ver agenda <i class="bi bi-arrow-right"></i></a>
+    </div>
+    <div class="cartao p-4">
+        <div class="flex items-center justify-between">
+            <p class="text-xs uppercase tracking-wider text-zinc-500">Clientes</p>
+            <i class="bi bi-people text-sky-400"></i>
+        </div>
+        <p class="text-2xl sm:text-3xl font-black text-white mt-2">{{contagens.clientes}}</p>
+        <a href="/admin/clientes" class="text-xs text-sky-400 hover:text-sky-300 mt-1 inline-flex items-center gap-1">Ver clientes <i class="bi bi-arrow-right"></i></a>
+    </div>
+    <div class="cartao p-4">
+        <div class="flex items-center justify-between">
+            <p class="text-xs uppercase tracking-wider text-zinc-500">Barbeiros ativos</p>
+            <i class="bi bi-person-badge text-emerald-400"></i>
+        </div>
+        <p class="text-2xl sm:text-3xl font-black text-white mt-2">{{contagens.barbeiros}}</p>
+        <a href="/admin/funcionarios" class="text-xs text-emerald-400 hover:text-emerald-300 mt-1 inline-flex items-center gap-1">Ver equipe <i class="bi bi-arrow-right"></i></a>
+    </div>
+    <div class="cartao p-4">
+        <div class="flex items-center justify-between">
+            <p class="text-xs uppercase tracking-wider text-zinc-500">Serviços ativos</p>
+            <i class="bi bi-scissors text-amber-500"></i>
+        </div>
+        <p class="text-2xl sm:text-3xl font-black text-white mt-2">{{contagens.servicosAtivos}}</p>
+        <a href="/admin/servicos" class="text-xs text-amber-500 hover:text-amber-400 mt-1 inline-flex items-center gap-1">Ver serviços <i class="bi bi-arrow-right"></i></a>
+    </div>
+</div>
+
+<!-- Indicadores financeiros do mês -->
+<div class="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 mb-6">
+    <div class="cartao p-4 border-emerald-500/20">
+        <p class="text-xs uppercase tracking-wider text-zinc-500">Receita do mês</p>
+        <p class="text-xl sm:text-2xl font-black text-emerald-400 mt-2">{{moeda financeiro.receitaTotal}}</p>
+        <p class="text-[11px] text-zinc-500 mt-1">Serviços + produtos + outras receitas</p>
+    </div>
+    <div class="cartao p-4">
+        <p class="text-xs uppercase tracking-wider text-zinc-500">Comissões estimadas</p>
+        <p class="text-xl sm:text-2xl font-black text-amber-400 mt-2">{{moeda financeiro.totalComissoes}}</p>
+        <a href="/admin/comissoes" class="text-[11px] text-amber-500 hover:text-amber-400 mt-1 inline-block">Ver detalhes</a>
+    </div>
+    <div class="cartao p-4">
+        <p class="text-xs uppercase tracking-wider text-zinc-500">Despesas do mês</p>
+        <p class="text-xl sm:text-2xl font-black text-rose-400 mt-2">{{moeda financeiro.despesaTotal}}</p>
+        <p class="text-[11px] text-zinc-500 mt-1">Compras + contas pagas + comissões</p>
+    </div>
+    <div class="cartao p-4">
+        <p class="text-xs uppercase tracking-wider text-zinc-500">Lucro do mês</p>
+        <p class="text-xl sm:text-2xl font-black {{#if (gte financeiro.lucro 0)}}text-emerald-400{{else}}text-rose-400{{/if}} mt-2">{{moeda financeiro.lucro}}</p>
+        <a href="/admin/relatorios/dre" class="text-[11px] text-amber-500 hover:text-amber-400 mt-1 inline-block">Abrir DRE</a>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6">
+    <!-- Agenda de hoje -->
+    <section class="xl:col-span-2 cartao overflow-hidden">
+        <div class="cartao-cabecalho flex items-center justify-between gap-3">
+            <div>
+                <h3 class="font-semibold text-white">Agenda de hoje</h3>
+                <p class="text-xs text-zinc-500">{{agendaHoje.length}} atendimento(s) não cancelado(s)</p>
+            </div>
+            <a href="/admin/agendamentos" class="botao botao-secundario botao-mini">Abrir agenda</a>
+        </div>
+
+        {{#if agendaHoje.length}}
+        <ul class="divide-y divide-zinc-800">
+            {{#each agendaHoje}}
+            <li class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 px-4 py-3">
+                <div class="flex items-center gap-3 min-w-0 flex-1">
+                    <span class="w-14 shrink-0 text-center rounded-lg bg-zinc-950 border border-zinc-800 py-1.5">
+                        <span class="block text-sm font-bold text-amber-400">{{hora hora}}</span>
+                    </span>
+                    <div class="min-w-0">
+                        <p class="text-sm font-semibold text-zinc-100 truncate">{{cliente.nome}}</p>
+                        <p class="text-xs text-zinc-500 truncate">
+                            {{#each itens}}{{nomeServico}}{{#unless @last}} · {{/unless}}{{/each}}
+                            — {{funcionario.nome}}
+                        </p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 sm:justify-end">
+                    <span class="text-sm font-semibold text-zinc-200">{{moeda valorTotal}}</span>
+                    <span class="selo {{corStatus status}}">{{rotuloStatus status}}</span>
+                </div>
+            </li>
+            {{/each}}
+        </ul>
+        {{else}}
+        <div class="tabela-vazia">
+            <i class="bi bi-cup-hot text-3xl block mb-2 text-zinc-600"></i>
+            Nenhum agendamento para hoje ainda.
+            <div class="mt-3"><a href="/admin/agendamentos/novo" class="botao botao-primario botao-mini">Novo agendamento</a></div>
+        </div>
+        {{/if}}
+    </section>
+
+    <!-- Atendimentos na semana -->
+    <section class="cartao p-4">
+        <h3 class="font-semibold text-white">Últimos 7 dias</h3>
+        <p class="text-xs text-zinc-500 mb-4">Atendimentos não cancelados por dia</p>
+        <div class="flex items-end justify-between gap-2 h-40">
+            {{#each porDia}}
+            <div class="flex-1 flex flex-col items-center gap-1">
+                <span class="text-[11px] font-semibold text-zinc-300">{{total}}</span>
+                <div class="w-full h-24 bg-zinc-950 border border-zinc-800 rounded-lg flex items-end overflow-hidden">
+                    <div class="w-full bg-gradient-to-t from-amber-600 to-amber-400 rounded-t-[4px]" style="height: {{percentual}}%"></div>
+                </div>
+                <span class="text-[10px] uppercase tracking-wider text-zinc-500">{{rotulo}}</span>
+            </div>
+            {{/each}}
+        </div>
+    </section>
+
+    <!-- Próximos agendamentos -->
+    <section class="cartao overflow-hidden xl:col-span-2">
+        <div class="cartao-cabecalho flex items-center justify-between">
+            <h3 class="font-semibold text-white">Próximos agendamentos</h3>
+            <a href="/admin/agendamentos" class="text-xs text-amber-500 hover:text-amber-400">Ver todos</a>
+        </div>
+        {{#if proximos.length}}
+        <ul class="divide-y divide-zinc-800">
+            {{#each proximos}}
+            <li class="flex items-center justify-between gap-3 px-4 py-3">
+                <div class="min-w-0">
+                    <p class="text-sm text-zinc-100 truncate">{{cliente.nome}}</p>
+                    <p class="text-xs text-zinc-500">{{data data}} às {{hora hora}} · {{funcionario.nome}}</p>
+                </div>
+                <span class="selo {{corStatus status}}">{{rotuloStatus status}}</span>
+            </li>
+            {{/each}}
+        </ul>
+        {{else}}
+        <p class="tabela-vazia">Nenhum agendamento futuro.</p>
+        {{/if}}
+    </section>
+
+    <!-- Estoque baixo -->
+    <section class="cartao overflow-hidden">
+        <div class="cartao-cabecalho flex items-center justify-between">
+            <h3 class="font-semibold text-white">Estoque baixo</h3>
+            <a href="/admin/estoque-baixo" class="text-xs text-amber-500 hover:text-amber-400">Ver tudo</a>
+        </div>
+        {{#if produtosBaixos.length}}
+        <ul class="divide-y divide-zinc-800">
+            {{#each produtosBaixos}}
+            <li class="flex items-center justify-between gap-3 px-4 py-3">
+                <span class="text-sm text-zinc-200 truncate">{{nome}}</span>
+                <span class="selo {{#if (lte estoque estoqueMinimo)}}selo-vermelho{{else}}selo-ambar{{/if}}">{{estoque}} un.</span>
+            </li>
+            {{/each}}
+        </ul>
+        {{else}}
+        <p class="tabela-vazia">Todos os produtos estão com estoque saudável.</p>
+        {{/if}}
+    </section>
+
+    <!-- Aniversariantes -->
+    <section class="cartao overflow-hidden xl:col-span-3">
+        <div class="cartao-cabecalho flex items-center justify-between">
+            <h3 class="font-semibold text-white">Aniversariantes do mês</h3>
+            <a href="/admin/relatorios/aniversariantes" class="text-xs text-amber-500 hover:text-amber-400">Ver relatório</a>
+        </div>
+        {{#if aniversariantes.length}}
+        <ul class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 divide-y xl:divide-y-0 divide-zinc-800">
+            {{#each aniversariantes}}
+            <li class="px-4 py-3 flex items-center gap-3">
+                <span class="w-9 h-9 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-bold flex items-center justify-center shrink-0">{{iniciais nome}}</span>
+                <div class="min-w-0">
+                    <p class="text-sm text-zinc-200 truncate">{{nome}}</p>
+                    <p class="text-xs text-zinc-500">{{data dataNascimento}} · {{telefone}}</p>
+                </div>
+            </li>
+            {{/each}}
+        </ul>
+        {{else}}
+        <p class="tabela-vazia">Nenhum cliente faz aniversário neste mês.</p>
+        {{/if}}
+    </section>
+</div>

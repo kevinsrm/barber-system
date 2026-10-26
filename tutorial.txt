@@ -1,0 +1,650 @@
+=====================================================================
+  BARBER SYSTEM - TUTORIAL COMPLETO DE INSTALAÇÃO E USO
+  Site de barbearia + agendamento online + painel administrativo
+=====================================================================
+
+Sumário
+  1. O que é o sistema
+  2. Requisitos
+  3. Instalação em 6 passos (resumo)
+  4. Passo a passo detalhado
+     4.1 Instalar o Node.js
+     4.2 Instalar o MySQL e criar o banco
+     4.3 Baixar as dependências (npm install)
+     4.4 Criar o arquivo .env
+     4.5 Criar as tabelas (migrations / npm run db:sync)
+     4.6 Popular o banco (seeder / npm run db:seed)
+     4.7 Rodar o sistema (npm start)
+  5. Usuários criados pelo seeder (logins de teste)
+  6. Como usar o sistema
+     6.1 Site público
+     6.2 Painel administrativo
+     6.3 Área do barbeiro
+     6.4 Área do cliente
+  7. Variáveis de ambiente explicadas
+  8. Estrutura de pastas
+  9. Regras de negócio (agenda, comissão, estoque, financeiro)
+ 10. Publicar na hospedagem (produção)
+ 11. Backup e restauração
+ 12. Problemas comuns e como resolver
+ 13. Comandos úteis
+ 14. Checklist final
+
+
+---------------------------------------------------------------------
+1. O QUE É O SISTEMA
+---------------------------------------------------------------------
+O barber-system é um sistema web completo para barbearias, dividido em
+três partes:
+
+  * SITE PÚBLICO  - vitrine da barbearia, serviços, depoimentos e
+                    agendamento online (o cliente escolhe serviço,
+                    profissional, data e horário sem precisar ligar).
+  * PAINEL ADMIN  - gestão de pessoas (usuários, barbeiros, clientes,
+                    fornecedores, cargos), catálogo (serviços e
+                    produtos), estoque, financeiro (vendas, compras,
+                    contas a pagar/receber, comissões), agenda,
+                    relatórios, DRE e configurações do site (textos,
+                    logo, SEO e depoimentos).
+  * ÁREA DO BARBEIRO - agenda individual, extrato de comissões e
+                    configuração dos próprios horários de trabalho.
+
+Tecnologias: Node.js + Express 5 + Handlebars + Sequelize + MySQL
+(mysql2) + Tailwind CSS (via CDN). O layout é 100% responsivo
+(celular, tablet e computador).
+
+
+---------------------------------------------------------------------
+2. REQUISITOS
+---------------------------------------------------------------------
+  - Node.js 18 ou superior (recomendado: 20 ou 22)
+  - MySQL 5.7 / 8.x (ou MariaDB 10.4+) ligado e acessível
+  - Um editor de código (VS Code, por exemplo) - opcional
+  - Navegador moderno (Chrome, Edge, Firefox, Safari)
+
+Observação: o sistema NÃO usa SQLite. O banco é sempre MySQL.
+
+
+---------------------------------------------------------------------
+3. INSTALAÇÃO EM 6 PASSOS (RESUMO)
+---------------------------------------------------------------------
+  1) Instale o Node.js e o MySQL.
+  2) Crie o banco:            CREATE DATABASE dbbarber;
+  3) No terminal, na pasta do projeto:   npm install
+  4) Copie .env.example para .env e ajuste os dados do banco.
+  5) Crie as tabelas e os dados iniciais: npm run db:sync
+  6) Inicie o sistema:        npm start
+     Depois abra http://localhost:3000
+
+Os detalhes de cada passo estão nas seções seguintes.
+
+
+---------------------------------------------------------------------
+4. PASSO A PASSO DETALHADO
+---------------------------------------------------------------------
+
+------------------------------
+4.1 Instalar o Node.js
+------------------------------
+Baixe a versão LTS em https://nodejs.org e instale com as opções
+padrão (Windows/macOS). No Linux (Ubuntu/Debian):
+
+    curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+    sudo apt install -y nodejs
+
+Confira a instalação:
+
+    node -v      (deve mostrar v18, v20 ou v22...)
+    npm -v
+
+
+------------------------------
+4.2 Instalar o MySQL e criar o banco
+------------------------------
+Instale o MySQL Server (https://dev.mysql.com/downloads/mysql/) ou
+use um painel (XAMPP/WAMP/Laragon) que já vem com MySQL.
+
+Depois abra o terminal do MySQL (ou phpMyAdmin) e crie o banco com
+acentuação correta:
+
+    CREATE DATABASE dbbarber
+      CHARACTER SET utf8mb4
+      COLLATE utf8mb4_unicode_ci;
+
+    CREATE USER 'barber'@'localhost' IDENTIFIED BY 'sua_senha_forte';
+    GRANT ALL PRIVILEGES ON dbbarber.* TO 'barber'@'localhost';
+    FLUSH PRIVILEGES;
+
+Dica: o nome do banco NÃO precisa ser dbbarber - só precisa ser igual
+ao DB_NAME do arquivo .env.
+
+Se preferir criar as tabelas manualmente (sem o Sequelize), importe o
+arquivo database/schema.sql depois de selecionar o banco:
+
+    mysql -u root -p dbbarber < database/schema.sql
+
+(mas o caminho recomendado é usar "npm run db:sync", que cria tudo
+sozinho).
+
+
+------------------------------
+4.3 Baixar as dependências
+------------------------------
+No terminal, entre na pasta do projeto e rode:
+
+    npm install
+
+Isso cria a pasta node_modules com Express, Sequelize, mysql2,
+Handlebars, multer, bcrypt etc. (as versões já estão travadas no
+package-lock.json).
+
+Se aparecer erro ao compilar o bcrypt (comum em Linux com versão de
+Node muito nova), instale as ferramentas de compilação e recompile:
+
+    sudo apt install -y build-essential python3
+    npm rebuild bcrypt --build-from-source
+
+Se o erro falar que não achou os headers do Node ("node.h"), aponte a
+pasta de headers da sua versão:
+    npm rebuild bcrypt --build-from-source --nodedir=/usr/local
+
+Alternativa no Windows, se aparecer erro de "node-gyp"/Visual Studio:
+instale as "Build Tools do Visual Studio" ou use uma versão LTS do
+Node.js.
+
+
+------------------------------
+4.4 Criar o arquivo .env
+------------------------------
+Copie o modelo:
+
+    Windows:  copy .env.example .env
+    Linux/Mac: cp .env.example .env
+
+Abra o .env e ajuste os dados do seu MySQL:
+
+    PORT=3000
+    NODE_ENV=development
+    APP_URL=http://localhost:3000
+    TZ_APP=America/Sao_Paulo
+
+    SESSION_SECRET=troque-por-um-texto-aleatorio-bem-grande
+    COOKIE_SECURE=false
+
+    DB_HOST=localhost
+    DB_PORT=3306
+    DB_NAME=dbbarber
+    DB_USER=root
+    DB_PASSWORD=sua_senha
+    DB_LOGGING=false
+    DB_ALTER=false
+
+    ADMIN_NAME=Administrador
+    ADMIN_EMAIL=admin@admin.com
+    ADMIN_PASSWORD=12345678
+    SEED_DEMO=true
+
+Regras importantes:
+  * O .env NUNCA deve ser enviado para o Git/GitHub (já está no
+    .gitignore) e nunca deve ser enviado para clientes. Ele contém a
+    senha do banco.
+  * DB_PASSWORD vazio ("") é aceito apenas quando o MySQL não usa
+    senha (comum em XAMPP).
+  * SESSION_SECRET deve ser um texto longo e aleatório em produção.
+
+
+------------------------------
+4.5 Criar as tabelas (migrations)
+------------------------------
+Com o MySQL ligado, rode:
+
+    npm run db:sync
+
+Esse comando:
+  1. testa a conexão;
+  2. cria todas as tabelas que ainda não existem (usuarios, clientes,
+     servicos, agendamentos, vendas, contas, sessoes...);
+  3. chama o seeder automaticamente no final (administrador + dados
+     de exemplo).
+
+Saída esperada:
+
+    🔄 Conectando ao MySQL...
+    🔄 Criando/atualizando as tabelas...
+    ✅ Tabelas prontas.
+    👤 Administrador pronto: admin@admin.com
+    ...
+    🎉 Tudo pronto! Rode "npm start" e acesse o sistema.
+
+O comando pode ser rodado mais de uma vez: ele NÃO apaga dados
+existentes. O que ele faz é criar o que falta.
+
+Se você mudou um model (adicionou uma coluna, por exemplo) e quer que
+o banco acompanhe, coloque DB_ALTER=true no .env e rode
+"npm run db:sync" novamente. Use DB_ALTER apenas em desenvolvimento:
+em produção, prefira alterar a tabela manualmente (ALTER TABLE) para
+evitar perda de dados.
+
+
+------------------------------
+4.6 Popular o banco (seeder)
+------------------------------
+"npm run db:sync" já executa o seeder. Para rodar separado:
+
+    npm run db:seed
+
+O seeder cria:
+  * o usuário administrador com os dados ADMIN_* do .env;
+  * (se SEED_DEMO=true) dados de exemplo: cargos, um barbeiro com
+    login, um cliente, serviços, produtos, fornecedores, horários de
+    atendimento e configurações iniciais do site.
+
+Ele é seguro para rodar várias vezes: só cria o que ainda não existe
+(não duplica registros).
+
+Se o site já estiver no ar e você não quiser dados de exemplo,
+coloque SEED_DEMO=false e rode "npm run db:seed" antes de cadastrar
+os dados reais. Atenção: os dados de demonstração só são criados
+quando não existe nenhum serviço cadastrado.
+
+
+------------------------------
+4.7 Rodar o sistema
+------------------------------
+    npm start
+
+Abra o navegador em:
+
+    http://localhost:3000          (site público)
+    http://localhost:3000/login    (entrar no sistema)
+
+Para desenvolvimento (reinicia sozinho ao salvar arquivos):
+
+    npm run dev
+
+A porta pode ser trocada no .env (PORT=8080, por exemplo).
+
+
+---------------------------------------------------------------------
+5. USUÁRIOS CRIADOS PELO SEEDER (LOGINS DE TESTE)
+---------------------------------------------------------------------
+  ADMINISTRADOR
+    E-mail: admin@admin.com
+    Senha:  12345678
+    Vai para: /admin
+
+  BARBEIRO (dados de exemplo)
+    E-mail: barbeiro@barbeiro.com
+    Senha:  12345678
+    Vai para: /painel
+
+  CLIENTE (dados de exemplo)
+    E-mail: cliente@cliente.com
+    Senha:  12345678
+    Vai para: /minhas-reservas
+
+>>> IMPORTANTE: troque essas senhas no primeiro acesso (menu Usuários)
+>>> ou defina ADMIN_PASSWORD no .env antes de rodar o seeder.
+
+
+---------------------------------------------------------------------
+6. COMO USAR O SISTEMA
+---------------------------------------------------------------------
+
+------------------------------
+6.1 Site público
+------------------------------
+  /                 Home: banner, serviços, equipe, depoimentos,
+                    informações de contato e botão de agendamento.
+  /servicos         Vitrine com todos os serviços ativos (preço e
+                    duração).
+  /agendar          Agendamento online em 4 etapas: serviços,
+                    profissional, data e horário. O sistema só mostra
+                    horários realmente livres.
+  /cadastro         Criação de conta do cliente (nome, e-mail e senha).
+  /login            Entrar no sistema (funciona para os 3 perfis).
+  /minhas-reservas  (cliente logado) Próximos horários, histórico e
+                    botão para cancelar.
+  /sitemap.xml      Mapa do site para o Google.
+  /robots.txt       Regras para os robôs de busca.
+
+Textos, logo, imagem de compartilhamento, telefone, WhatsApp, redes
+sociais e meta tags (SEO/Open Graph) são editados em
+Admin > Configurações.
+
+------------------------------
+6.2 Painel administrativo (/admin)
+------------------------------
+  Dashboard         Faturamento do mês, agenda do dia, próximos
+                    atendimentos, aniversariantes, estoque baixo,
+                    contas vencidas e depoimentos pendentes.
+
+  Agendamentos      Lista por data/status/barbeiro. Permite criar
+                    agendamento manual, confirmar, concluir ou
+                    cancelar. Concluir um atendimento é o que gera
+                    receita de serviços e comissão.
+
+  Pessoas
+    Clientes            Cadastro (nome, telefone/WhatsApp, e-mail,
+                        nascimento, observações).
+    Retorno de clientes Quem está há mais tempo sem voltar, com
+                        atalho para chamar no WhatsApp.
+    Funcionários        Barbeiros/equipe, cargo e % de comissão.
+    Usuários            Quem pode entrar no sistema e com qual perfil
+                        (administrador, barbeiro ou cliente).
+    Cargos              Cargos da equipe.
+    Fornecedores        Parceiros de compra.
+
+  Catálogo
+    Serviços            Nome, categoria, preço, duração e ícone.
+    Categorias de serviço
+    Produtos            Preço de custo, preço de venda, estoque e
+                        estoque mínimo.
+    Categorias de produto
+
+  Estoque
+    Estoque baixo       Produtos abaixo (ou no) estoque mínimo.
+    Entradas e saídas   Histórico de movimentações. "Nova
+                        movimentação" registra entrada/saída manual.
+
+  Financeiro
+    Vendas              Registro de venda no balcão (vários produtos
+                        em uma venda). Baixa o estoque automaticamente.
+    Compras             Entrada de mercadoria do fornecedor. Aumenta o
+                        estoque automaticamente.
+    Contas a pagar      Despesas fixas/variáveis com vencimento.
+    Contas a receber    Recebíveis (pacotes, mensalidades etc.).
+    Comissões           Cálculo automático por profissional no
+                        período.
+
+  Análises
+    Relatórios          Hub com: Produtos, Entradas, Saídas,
+                        Comissões, Contas, Aniversariantes e DRE.
+    DRE                 Demonstrativo de lucro simplificado:
+                        receitas - (compras + despesas + comissões).
+
+  Site
+    Configurações       Nome, slogan, logo, imagem de compartilhamento,
+                        textos da home, contatos, redes sociais, SEO e
+                        horário de funcionamento.
+    Depoimentos         Cadastro dos depoimentos/avaliações. Só os
+                        marcados como "aprovado" aparecem na home.
+    Acessos             Explicação de quais rotas cada perfil acessa.
+
+Todos os cadastros seguem o mesmo padrão: lista com busca, botão
+"Novo", lápis para editar e lixeira para excluir.
+
+------------------------------
+6.3 Área do barbeiro (/painel)
+------------------------------
+  Minha agenda        Atendimentos do dia escolhido, com botões para
+                      confirmar/concluir. Mostra resumo do dia.
+  Minhas comissões    Extrato por período (serviços + vendas).
+  Meus horários       Dias da semana de trabalho e horário de início e
+                      fim de cada dia. É isso que libera horários no
+                      site público.
+
+O barbeiro NÃO acessa valores financeiros da barbearia, apenas os
+próprios atendimentos e comissões.
+
+------------------------------
+6.4 Área do cliente
+------------------------------
+  - Agenda online em /agendar (pode agendar sem login).
+  - Com login em /minhas-reservas: vê próximos atendimentos, histórico
+    e pode cancelar (até o dia do atendimento).
+
+
+---------------------------------------------------------------------
+7. VARIÁVEIS DE AMBIENTE EXPLICADAS
+---------------------------------------------------------------------
+PORT              Porta do servidor (padrão 3000).
+NODE_ENV          "development" mostra detalhes dos erros; em
+                  "production" os erros ficam genéricos.
+APP_URL           URL pública do site. Usada nas tags de SEO/Open
+                  Graph e no sitemap.xml. Em produção:
+                  https://seudominio.com.br
+TZ_APP            Fuso usado para calcular "hoje" e os horários livres
+                  (padrão America/Sao_Paulo).
+SESSION_SECRET    Segredo que assina o cookie de login. Troque por um
+                  texto aleatório longo em produção.
+COOKIE_SECURE     "true" apenas quando o site estiver em HTTPS (senão
+                  o login não funciona).
+DB_HOST           Endereço do MySQL (localhost na maioria dos casos).
+DB_PORT           Porta do MySQL (3306).
+DB_NAME           Nome do banco (dbbarber).
+DB_USER           Usuário do banco.
+DB_PASSWORD       Senha do banco.
+DB_LOGGING        "true" imprime os SQLs no terminal (ótimo para
+                  estudar/documentar).
+DB_ALTER          "true" faz o db:sync ajustar colunas existentes.
+                  Use só em desenvolvimento.
+ADMIN_NAME        Nome do administrador criado pelo seeder.
+ADMIN_EMAIL       E-mail do administrador.
+ADMIN_PASSWORD    Senha inicial do administrador.
+SEED_DEMO         "true" cria barbeiro/serviços/produtos de exemplo.
+
+
+---------------------------------------------------------------------
+8. ESTRUTURA DE PASTAS
+---------------------------------------------------------------------
+barber-system/
+├── index.js                  Inicia o servidor (npm start)
+├── app.js                    Configuração do Express, sessão, layouts, erros
+├── db.js                     Conexão com o MySQL (Sequelize)
+├── package.json              Scripts e dependências
+├── .env.example              Modelo das variáveis de ambiente
+├── database/
+│   ├── sync.js               Cria as tabelas (npm run db:sync)
+│   ├── seed.js               Dados iniciais (npm run db:seed)
+│   └── schema.sql            DDL das tabelas (opcional, para importar no phpMyAdmin)
+├── config/
+│   └── helpers.js            Funções das views ({{moeda}}, {{data}}, {{eq}}...)
+├── app/
+│   ├── models/               20 models do Sequelize + index.js (relações)
+│   ├── controllers/          Lógica das telas
+│   │   ├── admin/            Controllers do painel (um arquivo por módulo)
+│   │   ├── authController.js, siteController.js,
+│   │   ├── clienteController.js, painelController.js
+│   ├── middlewares/          Sessão/flash, dados globais, permissões, upload
+│   ├── services/             Regras de negócio (agenda, comissão, financeiro)
+│   └── utils.js              Datas, números e conversões
+├── routes/
+│   ├── index.js              Junta todas as rotas
+│   ├── site.js  auth.js  cliente.js  painel.js  admin.js
+├── views/
+│   ├── layouts/              main (site), auth (login), admin (painel)
+│   ├── partials/             header, footer, sidebar, flash...
+│   ├── site/  auth/  cliente/  painel/  admin/  errors/
+├── public/
+│   ├── css/style.css         Estilos extras
+│   ├── js/                   app.js, agendar.js, financeiro-form.js
+│   ├── images/favicon.svg
+│   └── uploads/              Logo e imagem de compartilhamento enviadas
+└── tutorial.txt              Este arquivo
+
+Resumo do fluxo de uma requisição:
+  routes -> controller -> model/service -> view (.handlebars)
+
+Para criar uma tela nova simples, copie um CRUD parecido em
+app/controllers/admin/ e registre a rota em routes/admin.js.
+
+
+---------------------------------------------------------------------
+9. REGRAS DE NEGÓCIO
+---------------------------------------------------------------------
+AGENDA
+  - Horários de 30 em 30 minutos, dentro do horário do barbeiro
+    (Dias/horários configurados em /painel/horarios).
+  - Sem horários cadastrados, o padrão é segunda a sábado,
+    09:00 às 19:00 (domingo fechado).
+  - Não deixa agendar no passado nem com menos de 30 minutos de
+    antecedência.
+  - Um agendamento pode ter vários serviços (o sistema soma preço e
+    duração e evita conflito de horário).
+  - Status: pendente -> confirmado -> concluido (ou cancelado).
+  - O cliente cancela a própria reserva até o dia do atendimento (não
+    é possível cancelar depois que a data passou).
+
+COMISSÃO
+  - Percentual cadastrado no funcionário (padrão 40%).
+  - Base = serviços concluídos no período + vendas atribuídas a ele.
+  - Aparece em Comissões, Relatórios e DRE.
+
+ESTOQUE
+  - Vendas e compras movimentam o estoque automaticamente.
+  - Entradas e saídas manuais ficam registradas em Entradas e saídas.
+  - Produto com estoque <= estoque mínimo aparece em Estoque baixo.
+
+FINANCEIRO
+  - Contas a pagar/receber têm vencimento, status pago e data de
+    pagamento. Dica: contas a pagar vencidas aparecem no Dashboard.
+  - DRE soma: receitas (serviços concluídos + vendas + contas
+    recebidas) menos despesas (compras + contas pagas + comissões).
+  - Para não duplicar valores, não lance a mesma venda/serviço também
+    como conta a receber, nem a mesma comissão como conta a pagar.
+
+
+---------------------------------------------------------------------
+10. PUBLICAR NA HOSPEDAGEM (PRODUÇÃO)
+---------------------------------------------------------------------
+  1) Envie os arquivos do projeto para o servidor (sem a pasta
+     node_modules e sem o .env).
+  2) Crie o banco MySQL e o usuário no painel da hospedagem.
+  3) Crie o .env no servidor com:
+        NODE_ENV=production
+        APP_URL=https://seudominio.com.br
+        COOKIE_SECURE=true          (somente com HTTPS)
+        SESSION_SECRET=texto-aleatorio-longo
+        DB_* com os dados do servidor
+        ADMIN_* já com a senha definitiva
+  4) Instale as dependências na versão de produção:
+        npm install --omit=dev
+  5) Crie as tabelas e o administrador:
+        npm run db:sync
+  6) Inicie a aplicação:
+        npm start
+  7) Configure o domínio/HTTPS e mantenha o processo vivo. Opções:
+     - PM2:      npm i -g pm2 && pm2 start index.js --name barber
+                 pm2 save && pm2 startup
+     - Hospedagem com Node (cPanel "Setup Node.js App",
+       Passenger, Render, Railway, VPS com systemd): informe
+       "index.js" como arquivo de inicialização.
+  8) Dê permissão de escrita na pasta public/uploads (log e imagem
+     de compartilhamento são gravados nela):
+        chmod -R 775 public/uploads
+
+Cuidados:
+  * Nunca use DB_ALTER=true em produção.
+  * Nunca deixe NODE_ENV=development em produção.
+  * COOKIE_SECURE=true exige HTTPS; sem HTTPS o login não funciona.
+  * Em hospedagem com proxy reverso, o app já usa "trust proxy" e
+    respeita o protocolo HTTPS.
+
+
+---------------------------------------------------------------------
+11. BACKUP E RESTAURAÇÃO
+---------------------------------------------------------------------
+Backup completo do banco (recomendado fazer diariamente):
+
+    mysqldump -u root -p dbbarber > backup-2026-10-26.sql
+
+Restaurar:
+
+    mysql -u root -p dbbarber < backup-2026-10-26.sql
+
+Backup das imagens enviadas: copie a pasta public/uploads.
+
+No cPanel/phpMyAdmin: aba "Exportar" / "Importar" faz o mesmo.
+
+
+---------------------------------------------------------------------
+12. PROBLEMAS COMUNS E COMO RESOLVER
+---------------------------------------------------------------------
+"❌ Não foi possível conectar ao MySQL"
+  * O MySQL está desligado? (XAMPP: painel -> Start MySQL)
+  * DB_HOST/DB_PORT/DB_NAME/DB_USER/DB_PASSWORD conferem com o .env?
+  * O usuário tem permissão no banco? (GRANT ALL PRIVILEGES ...)
+  * MySQL 8 com senha forte: use aspas no valor se tiver caracteres
+    especiais (ex.: DB_PASSWORD="a#b@c").
+
+"ER_BAD_DB_ERROR: Unknown database 'dbbarber'"
+  * O banco não foi criado. Rode: CREATE DATABASE dbbarber;
+
+"Table 'dbbarber.usuarios' doesn't exist"
+  * Falta rodar "npm run db:sync".
+
+Erro ao instalar/rodar bcrypt (node-gyp, "No such file or directory")
+  * Linux:  sudo apt install -y build-essential python3
+            npm rebuild bcrypt --build-from-source
+  * Windows: instale as Build Tools do Visual Studio e rode
+    "npm install" novamente.
+
+Login não "gruda" / volta para a tela de login
+  * Em produção com HTTPS, confira COOKIE_SECURE=true.
+  * Em HTTP, COOKIE_SECURE deve ser false.
+  * Confira se SESSION_SECRET está definido.
+
+"E-mail ou senha incorretos" com as senhas de teste
+  * Rode "npm run db:seed" para garantir que o administrador existe.
+  * Ou redefina a senha no painel (Usuários > editar > senha).
+
+Upload de logo não funciona
+  * A imagem precisa ter até 2 MB e ser JPG, PNG ou WEBP.
+  * A pasta public/uploads precisa existir e ter permissão de escrita.
+
+Página em branco ou erro 500
+  * Abra o terminal onde o site está rodando: a mensagem do erro
+    aparece lá. Com NODE_ENV=development a tela também mostra o
+    detalhe.
+
+"Muitas tentativas de login" (tela 429)
+  * Proteção contra força bruta: depois de 8 senhas erradas seguidas,
+    aquele e-mail fica 15 minutos bloqueado. Espere o tempo indicado
+    ou reinicie o servidor (a contagem fica na memória).
+
+Site sem estilo (Tailwind)
+  * O Tailwind é carregado por CDN; é preciso internet no navegador.
+    Em produção, sem CDN, gere um CSS estático e troque o link em
+    views/layouts/main.handlebars.
+
+Porta 3000 ocupada
+  * Troque PORT no .env ou encerre o outro processo.
+
+
+---------------------------------------------------------------------
+13. COMANDOS ÚTEIS
+---------------------------------------------------------------------
+  npm install          Instala as dependências
+  npm start            Sobe o sistema (produção)
+  npm run dev          Sobe com reinício automático (nodemon)
+  npm run db:sync      Cria/atualiza as tabelas + roda o seeder
+  npm run db:seed      Apenas cadastra os dados iniciais
+
+Verificar a versão do Node:      node -v
+Verificar se o MySQL responde:   mysqladmin -u root -p status
+
+
+---------------------------------------------------------------------
+14. CHECKLIST FINAL
+---------------------------------------------------------------------
+  [ ] Node.js 18+ instalado
+  [ ] MySQL ligado e banco dbbarber criado
+  [ ] .env criado a partir do .env.example e preenchido
+  [ ] npm install executado sem erros
+  [ ] npm run db:sync concluído (tabelas + admin)
+  [ ] npm start e site abrindo em http://localhost:3000
+  [ ] Login do admin funcionando (admin@admin.com / 12345678)
+  [ ] Senha do admin trocada
+  [ ] Configurações > textos, logo e SEO revisados
+  [ ] Serviços, barbeiros e horários cadastrados
+  [ ] Em produção: NODE_ENV=production, APP_URL com domínio,
+      COOKIE_SECURE=true (com HTTPS) e DB_ALTER=false
+
+Suporte: leia os comentários no topo dos arquivos .js - cada pasta
+(models, controllers, services, routes) tem um cabeçalho explicando
+sua responsabilidade.
+
+=====================================================================
+Fim do tutorial - bom trabalho e bons negócios!
+=====================================================================

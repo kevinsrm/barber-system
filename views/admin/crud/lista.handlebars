@@ -1,0 +1,123 @@
+<!-- Cabeçalho da página -->
+<div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-5">
+    <div>
+        <p class="text-[11px] font-semibold uppercase tracking-widest text-amber-500">Cadastro</p>
+        <h2 class="text-xl sm:text-2xl font-bold text-white">{{titulo}}</h2>
+        <p class="text-sm text-zinc-500 mt-0.5">{{total}} registro(s) encontrado(s)</p>
+    </div>
+    <div class="flex flex-wrap gap-2">
+        {{#if permitirCriar}}
+        <a href="{{rotaBase}}/novo" class="botao botao-primario">
+            <i class="bi bi-plus-lg"></i> Novo
+        </a>
+        {{/if}}
+        <a href="{{urlLista}}" class="botao botao-secundario" title="Atualizar lista">
+            <i class="bi bi-arrow-clockwise"></i>
+        </a>
+    </div>
+</div>
+
+<!-- Busca -->
+{{#if busca}}
+<form method="GET" action="{{urlLista}}" class="flex flex-col sm:flex-row gap-2 mb-4 sm:max-w-xl">
+    <div class="relative flex-1">
+        <i class="bi bi-search absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 text-sm"></i>
+        <input type="search" name="busca" value="{{busca.termo}}" placeholder="{{busca.dica}}" class="campo pl-9" aria-label="Buscar">
+    </div>
+    <div class="flex gap-2">
+        <button type="submit" class="botao botao-secundario flex-1 sm:flex-none">Buscar</button>
+        {{#if busca.termo}}
+        <a href="{{urlLista}}" class="botao botao-secundario" title="Limpar busca"><i class="bi bi-x-lg"></i></a>
+        {{/if}}
+    </div>
+</form>
+{{/if}}
+
+<!-- Tabela -->
+<div class="cartao overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="tabela min-w-[680px]">
+            <thead>
+                <tr>
+                    {{#each colunas}}
+                    <th>{{rotulo}}</th>
+                    {{/each}}
+                    <th class="text-right">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each registros}}
+                <tr>
+                    {{#each celulas}}
+                    <td>
+                        {{#if (eq tipo 'moeda')}}
+                            <span class="font-semibold text-zinc-100">{{moeda valor}}</span>
+                        {{else if (eq tipo 'data')}}
+                            {{data valor}}
+                        {{else if (eq tipo 'dataHora')}}
+                            {{dataHora valor}}
+                        {{else if (eq tipo 'hora')}}
+                            {{hora valor}}
+                        {{else if (eq tipo 'numero')}}
+                            {{#if valor}}{{valor}}{{else}}0{{/if}}
+                        {{else if (eq tipo 'simNao')}}
+                            {{#if valor}}<span class="selo selo-verde"><i class="bi bi-check2"></i> Sim</span>
+                            {{else}}<span class="selo selo-cinza"><i class="bi bi-dash"></i> Não</span>{{/if}}
+                        {{else if (eq tipo 'status')}}
+                            <span class="selo {{corStatus valor}}">{{rotuloStatus valor}}</span>
+                        {{else}}
+                            {{#if valor}}{{valor}}{{else}}<span class="text-zinc-600">—</span>{{/if}}
+                        {{/if}}
+                    </td>
+                    {{/each}}
+                    <td>
+                        <div class="flex items-center justify-end gap-2">
+                            {{#if ../permitirEditar}}
+                            <a href="{{../rotaBase}}/{{id}}/editar" class="botao botao-icone" title="Editar">
+                                <i class="bi bi-pencil text-sm"></i>
+                            </a>
+                            {{/if}}
+                            {{#if ../permitirExcluir}}
+                            <form method="POST" action="{{../rotaBase}}/{{id}}/excluir" data-confirmar="Deseja realmente excluir este registro?" class="inline">
+                                <button type="submit" class="botao botao-icone perigo" title="Excluir">
+                                    <i class="bi bi-trash text-sm"></i>
+                                </button>
+                            </form>
+                            {{/if}}
+                        </div>
+                    </td>
+                </tr>
+                {{else}}
+                <tr>
+                    <td colspan="8">
+                        <div class="tabela-vazia">
+                            <i class="bi bi-inbox text-3xl block mb-2 text-zinc-600"></i>
+                            Nenhum registro encontrado.
+                            {{#if permitirCriar}}
+                            <div class="mt-3">
+                                <a href="{{rotaBase}}/novo" class="botao botao-primario">Cadastrar o primeiro</a>
+                            </div>
+                            {{/if}}
+                        </div>
+                    </td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Paginação -->
+{{#if (gt totalPaginas 1)}}
+<div class="flex items-center justify-between gap-3 mt-4 text-sm text-zinc-400">
+    <span>Página {{pagina}} de {{totalPaginas}}</span>
+    <div class="flex gap-2">
+        {{#if temAnterior}}
+            <a href="{{linkAnterior}}" class="botao botao-secundario botao-mini"><i class="bi bi-chevron-left"></i> Anterior</a>
+        {{/if}}
+        {{#if temProxima}}
+            <a href="{{linkProxima}}" class="botao botao-secundario botao-mini">Próxima <i class="bi bi-chevron-right"></i></a>
+        {{/if}}
+    </div>
+</div>
+{{/if}}

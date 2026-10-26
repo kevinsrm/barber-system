@@ -1,0 +1,94 @@
+<div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-5">
+    <div>
+        <p class="text-[11px] font-semibold uppercase tracking-widest text-amber-500">Relatórios</p>
+        <h2 class="text-xl sm:text-2xl font-bold text-white">Saídas / despesas</h2>
+        <p class="text-sm text-zinc-500 mt-0.5">De {{data inicio}} a {{data fim}}</p>
+    </div>
+    <div class="flex gap-2 nao-imprimir">
+        <a href="/admin/relatorios" class="botao botao-secundario"><i class="bi bi-arrow-left"></i> Voltar</a>
+        <button type="button" onclick="window.print()" class="botao botao-secundario"><i class="bi bi-printer"></i> Imprimir</button>
+    </div>
+</div>
+
+{{> admin/filtro-periodo}}
+
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
+    <div class="cartao p-4">
+        <p class="text-[11px] uppercase tracking-wider text-zinc-500">Compras</p>
+        <p class="text-xl font-bold text-zinc-100 mt-1">{{moeda totais.compras}}</p>
+    </div>
+    <div class="cartao p-4">
+        <p class="text-[11px] uppercase tracking-wider text-zinc-500">Contas pagas</p>
+        <p class="text-xl font-bold text-zinc-100 mt-1">{{moeda totais.contas}}</p>
+    </div>
+    <div class="cartao p-4">
+        <p class="text-[11px] uppercase tracking-wider text-zinc-500">Comissões</p>
+        <p class="text-xl font-bold text-zinc-100 mt-1">{{moeda totais.comissoes}}</p>
+    </div>
+    <div class="cartao p-4 border-rose-500/30">
+        <p class="text-[11px] uppercase tracking-wider text-zinc-500">Total</p>
+        <p class="text-xl font-black text-rose-300 mt-1">{{moeda totais.geral}}</p>
+    </div>
+</div>
+
+<section class="cartao overflow-hidden mb-4 cartao-impressao">
+    <div class="cartao-cabecalho"><h3 class="font-semibold text-white">Compras</h3></div>
+    <div class="overflow-x-auto">
+        <table class="tabela min-w-[640px]">
+            <thead><tr><th>Data</th><th>Fornecedor</th><th>Itens</th><th class="numero">Valor</th></tr></thead>
+            <tbody>
+                {{#each compras}}
+                <tr>
+                    <td>{{data data}}</td>
+                    <td class="text-zinc-100">{{#if fornecedor}}{{fornecedor.nome}}{{else}}—{{/if}}</td>
+                    <td class="text-xs text-zinc-500">{{#each itens}}{{quantidade}}x {{descricao}}{{#unless @last}}, {{/unless}}{{/each}}</td>
+                    <td class="numero font-semibold">{{moeda valorTotal}}</td>
+                </tr>
+                {{else}}
+                <tr><td colspan="4"><div class="tabela-vazia">Nenhuma compra no período.</div></td></tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section class="cartao overflow-hidden mb-4 cartao-impressao">
+    <div class="cartao-cabecalho"><h3 class="font-semibold text-white">Contas pagas</h3></div>
+    <div class="overflow-x-auto">
+        <table class="tabela min-w-[640px]">
+            <thead><tr><th>Data</th><th>Descrição</th><th class="numero">Valor</th></tr></thead>
+            <tbody>
+                {{#each contas}}
+                <tr>
+                    <td>{{data dataPagamento}}</td>
+                    <td class="text-zinc-100">{{descricao}}</td>
+                    <td class="numero font-semibold">{{moeda valor}}</td>
+                </tr>
+                {{else}}
+                <tr><td colspan="3"><div class="tabela-vazia">Nenhuma conta paga no período.</div></td></tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section class="cartao overflow-hidden cartao-impressao">
+    <div class="cartao-cabecalho"><h3 class="font-semibold text-white">Comissões do período</h3></div>
+    <div class="overflow-x-auto">
+        <table class="tabela min-w-[640px]">
+            <thead><tr><th>Barbeiro</th><th class="numero">Base</th><th class="numero">%</th><th class="numero">Comissão</th></tr></thead>
+            <tbody>
+                {{#each comissoes}}
+                <tr>
+                    <td class="text-zinc-100">{{nome}}</td>
+                    <td class="numero">{{moeda base}}</td>
+                    <td class="numero">{{numero percentual 0}}%</td>
+                    <td class="numero font-semibold">{{moeda valorComissao}}</td>
+                </tr>
+                {{else}}
+                <tr><td colspan="4"><div class="tabela-vazia">Nenhuma comissão no período.</div></td></tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
+</section>

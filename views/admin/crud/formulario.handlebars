@@ -1,0 +1,69 @@
+<div class="max-w-3xl mx-auto">
+    <!-- Cabeçalho -->
+    <div class="flex items-center gap-3 mb-5">
+        <a href="{{voltar}}" class="botao botao-icone" title="Voltar">
+            <i class="bi bi-arrow-left"></i>
+        </a>
+        <div>
+            <p class="text-[11px] font-semibold uppercase tracking-widest text-amber-500">{{titulo}}</p>
+            <h2 class="text-xl sm:text-2xl font-bold text-white">{{tituloPagina}}</h2>
+        </div>
+    </div>
+
+    {{#if mensagem}}
+    <div class="alerta alerta-erro mb-4">
+        <i class="bi bi-exclamation-triangle"></i>
+        <span>{{mensagem}}</span>
+    </div>
+    {{/if}}
+
+    <form method="POST" action="{{acao}}" class="cartao p-5 sm:p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+        {{#each campos}}
+        <div class="{{#if (eq largura 2)}}md:col-span-2{{/if}}">
+            {{#if (eq tipo 'checkbox')}}
+                <label class="flex items-start gap-3 bg-zinc-950/60 border border-zinc-800 rounded-xl px-4 py-3 cursor-pointer">
+                    <input type="checkbox" id="{{nome}}" name="{{nome}}" {{#if marcado}}checked{{/if}} class="campo-check mt-0.5">
+                    <span>
+                        <span class="block text-sm font-medium text-zinc-200">{{rotulo}}</span>
+                        {{#if ajuda}}<span class="block text-xs text-zinc-500 mt-0.5">{{ajuda}}</span>{{/if}}
+                    </span>
+                </label>
+            {{else}}
+                <label for="{{nome}}" class="rotulo">{{rotulo}}{{#if obrigatorio}} <span class="text-amber-500">*</span>{{/if}}</label>
+
+                {{#if (eq tipo 'textarea')}}
+                    <textarea id="{{nome}}" name="{{nome}}" rows="3" class="campo-texto" {{#if obrigatorio}}required{{/if}}>{{valorAtual}}</textarea>
+                {{else if (eq tipo 'select')}}
+                    <select id="{{nome}}" name="{{nome}}" class="campo-select" {{#if obrigatorio}}required{{/if}}>
+                        <option value="">Selecione...</option>
+                        {{#each opcoes}}
+                        <option value="{{valor}}" {{#if selecionado}}selected{{/if}}>{{rotulo}}</option>
+                        {{/each}}
+                    </select>
+                {{else if (eq tipo 'numero')}}
+                    <input type="number" step="1" id="{{nome}}" name="{{nome}}" value="{{valorAtual}}" class="campo" {{#if obrigatorio}}required{{/if}}>
+                {{else if (eq tipo 'decimal')}}
+                    <input type="number" step="0.01" id="{{nome}}" name="{{nome}}" value="{{valorAtual}}" class="campo" {{#if obrigatorio}}required{{/if}}>
+                {{else if (eq tipo 'data')}}
+                    <input type="date" id="{{nome}}" name="{{nome}}" value="{{valorAtual}}" class="campo" {{#if obrigatorio}}required{{/if}}>
+                {{else if (eq tipo 'hora')}}
+                    <input type="time" id="{{nome}}" name="{{nome}}" value="{{valorAtual}}" class="campo" {{#if obrigatorio}}required{{/if}}>
+                {{else if (eq tipo 'senha')}}
+                    <input type="password" id="{{nome}}" name="{{nome}}" value="" autocomplete="new-password" class="campo" {{#if obrigatorio}}required{{/if}}>
+                {{else if (eq tipo 'email')}}
+                    <input type="email" id="{{nome}}" name="{{nome}}" value="{{valorAtual}}" class="campo" {{#if obrigatorio}}required{{/if}}>
+                {{else}}
+                    <input type="text" id="{{nome}}" name="{{nome}}" value="{{valorAtual}}" class="campo" {{#if obrigatorio}}required{{/if}}>
+                {{/if}}
+
+                {{#if ajuda}}<p class="ajuda">{{ajuda}}</p>{{/if}}
+            {{/if}}
+        </div>
+        {{/each}}
+
+        <div class="md:col-span-2 flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-4 mt-1 border-t border-zinc-800">
+            <a href="{{voltar}}" class="botao botao-secundario">Cancelar</a>
+            <button type="submit" class="botao botao-primario"><i class="bi bi-check2"></i> Salvar</button>
+        </div>
+    </form>
+</div>

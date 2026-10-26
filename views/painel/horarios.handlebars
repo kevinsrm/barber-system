@@ -1,0 +1,38 @@
+<div class="max-w-2xl mx-auto">
+    <div class="mb-5">
+        <p class="text-[11px] font-semibold uppercase tracking-widest text-amber-500">Minha área</p>
+        <h2 class="text-xl sm:text-2xl font-bold text-white">Meus horários</h2>
+        <p class="text-sm text-zinc-500 mt-0.5">Defina os dias e horários em que você atende. Os clientes só verão horários livres dentro destas janelas.</p>
+    </div>
+
+    <div class="alerta alerta-info mb-4">
+        <i class="bi bi-info-circle"></i>
+        <span>Marque apenas os dias em que você trabalha. Se um dia ficar desmarcado, ele aparece como folga.</span>
+    </div>
+
+    <form method="POST" action="/painel/horarios" class="cartao p-4 sm:p-5 space-y-3">
+        {{#each dias}}
+        <div class="flex flex-col sm:flex-row sm:items-center gap-3 p-3 rounded-xl border border-zinc-800 bg-zinc-950/40">
+            <label class="flex items-center gap-3 sm:w-44 cursor-pointer">
+                <input type="checkbox" name="ativo_{{numero}}" {{#if ativo}}checked{{/if}} class="campo-check">
+                <span class="text-sm font-medium text-zinc-200">{{nome}}</span>
+            </label>
+            <div class="flex items-center gap-2 flex-1">
+                <div class="flex-1">
+                    <label for="inicio_{{numero}}" class="text-[10px] uppercase tracking-wider text-zinc-500 block mb-0.5">Início</label>
+                    <input type="time" id="inicio_{{numero}}" name="inicio_{{numero}}" value="{{horaInicio}}" class="campo py-1.5 text-sm">
+                </div>
+                <span class="text-zinc-600 pt-4">até</span>
+                <div class="flex-1">
+                    <label for="fim_{{numero}}" class="text-[10px] uppercase tracking-wider text-zinc-500 block mb-0.5">Fim</label>
+                    <input type="time" id="fim_{{numero}}" name="fim_{{numero}}" value="{{horaFim}}" class="campo py-1.5 text-sm">
+                </div>
+            </div>
+        </div>
+        {{/each}}
+
+        <div class="flex flex-col-reverse sm:flex-row sm:justify-end pt-4 border-t border-zinc-800">
+            <button type="submit" class="botao botao-primario"><i class="bi bi-check2"></i> Salvar horários</button>
+        </div>
+    </form>
+</div>

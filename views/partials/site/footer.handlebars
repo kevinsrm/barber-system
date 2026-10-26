@@ -1,0 +1,59 @@
+<footer id="contato" class="bg-zinc-950 border-t border-zinc-800 mt-auto">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+
+        <div class="space-y-4">
+            <div class="flex items-center gap-3">
+                {{#if site.logo}}
+                    <img src="{{site.logo}}" alt="Logo {{site.nome}}" class="h-10 w-auto max-w-[140px] object-contain">
+                {{else}}
+                    <span class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+                        <i class="bi bi-scissors text-lg"></i>
+                    </span>
+                {{/if}}
+                <span class="font-black text-lg text-white">{{site.nome}}</span>
+            </div>
+            <p class="text-sm text-zinc-400 leading-relaxed">{{site.slogan}}</p>
+            <div class="flex items-center gap-3 pt-1">
+                {{#if site.instagram}}<a href="{{site.instagram}}" target="_blank" rel="noopener" class="w-9 h-9 rounded-lg border border-zinc-800 text-zinc-400 hover:text-amber-400 hover:border-amber-500/40 flex items-center justify-center transition" aria-label="Instagram"><i class="bi bi-instagram"></i></a>{{/if}}
+                {{#if site.facebook}}<a href="{{site.facebook}}" target="_blank" rel="noopener" class="w-9 h-9 rounded-lg border border-zinc-800 text-zinc-400 hover:text-amber-400 hover:border-amber-500/40 flex items-center justify-center transition" aria-label="Facebook"><i class="bi bi-facebook"></i></a>{{/if}}
+                {{#if whatsappLink}}<a href="{{whatsappLink}}" target="_blank" rel="noopener" class="w-9 h-9 rounded-lg border border-zinc-800 text-zinc-400 hover:text-emerald-400 hover:border-emerald-500/40 flex items-center justify-center transition" aria-label="WhatsApp"><i class="bi bi-whatsapp"></i></a>{{/if}}
+            </div>
+        </div>
+
+        <div>
+            <h2 class="text-xs font-semibold uppercase tracking-widest text-amber-500 mb-4">Navegação</h2>
+            <ul class="space-y-2 text-sm text-zinc-400">
+                <li><a href="/" class="hover:text-amber-400 transition">Início</a></li>
+                <li><a href="/servicos" class="hover:text-amber-400 transition">Serviços e preços</a></li>
+                <li><a href="/agendar" class="hover:text-amber-400 transition">Agendar horário</a></li>
+                <li><a href="/minhas-reservas" class="hover:text-amber-400 transition">Minhas reservas</a></li>
+                <li><a href="/login" class="hover:text-amber-400 transition">Entrar / Painel</a></li>
+            </ul>
+        </div>
+
+        <div>
+            <h2 class="text-xs font-semibold uppercase tracking-widest text-amber-500 mb-4">Contato</h2>
+            <ul class="space-y-3 text-sm text-zinc-400">
+                {{#if site.endereco}}<li class="flex gap-2"><i class="bi bi-geo-alt text-amber-500 mt-0.5"></i><span>{{site.endereco}}</span></li>{{/if}}
+                {{#if site.telefone}}<li class="flex gap-2"><i class="bi bi-telephone text-amber-500 mt-0.5"></i><a href="tel:{{site.telefone}}" class="hover:text-amber-400">{{site.telefone}}</a></li>{{/if}}
+                {{#if site.email}}<li class="flex gap-2"><i class="bi bi-envelope text-amber-500 mt-0.5"></i><a href="mailto:{{site.email}}" class="hover:text-amber-400 break-all">{{site.email}}</a></li>{{/if}}
+                {{#if whatsappLink}}<li class="flex gap-2"><i class="bi bi-whatsapp text-emerald-500 mt-0.5"></i><a href="{{whatsappLink}}" target="_blank" rel="noopener" class="hover:text-emerald-400">Fale no WhatsApp</a></li>{{/if}}
+            </ul>
+        </div>
+
+        <div>
+            <h2 class="text-xs font-semibold uppercase tracking-widest text-amber-500 mb-4">Horário</h2>
+            <p class="text-sm text-zinc-400 leading-relaxed">{{site.horarioFuncionamento}}</p>
+            <a href="/agendar" class="mt-5 inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-400 text-zinc-950 text-sm font-bold px-4 py-2.5 rounded-xl transition">
+                <i class="bi bi-calendar-check"></i> Reservar horário
+            </a>
+        </div>
+    </div>
+
+    <div class="border-t border-zinc-800/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-zinc-500">
+            <p>© {{anoAtual}} {{site.nome}}. Todos os direitos reservados.</p>
+            <p class="flex items-center gap-2"><i class="bi bi-shield-check text-amber-500"></i> Site seguro · Agendamento online</p>
+        </div>
+    </div>
+</footer>

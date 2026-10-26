@@ -1,0 +1,78 @@
+<div class="space-y-6">
+  <div>
+    <h1 class="text-2xl font-bold text-white">Acessos &amp; permissões</h1>
+    <p class="text-sm text-zinc-400">Veja o que cada perfil de usuário pode fazer no sistema.</p>
+  </div>
+
+  <div class="rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 text-sm text-amber-200">
+    <p class="flex items-start gap-2">
+      <i class="bi bi-info-circle mt-0.5"></i>
+      <span>
+        As permissões são aplicadas no servidor pelos middlewares
+        <code class="rounded bg-zinc-900 px-1 text-amber-300">exigirLogin</code>,
+        <code class="rounded bg-zinc-900 px-1 text-amber-300">exigirAdmin</code> e
+        <code class="rounded bg-zinc-900 px-1 text-amber-300">exigirBarbeiro</code>.
+        Para dar acesso total a alguém, mude o perfil do usuário em <a href="/admin/usuarios" class="underline">Usuários</a>.
+      </span>
+    </p>
+  </div>
+
+  <div class="grid gap-4 lg:grid-cols-3">
+    {{#each perfis}}
+      <div class="flex flex-col rounded-xl border border-zinc-800 bg-zinc-900">
+        <div class="flex items-center gap-3 border-b border-zinc-800 p-4">
+          <span class="flex h-10 w-10 items-center justify-center rounded-lg {{classeIcone}}">
+            <i class="bi {{icone}}"></i>
+          </span>
+          <div>
+            <p class="font-semibold text-white">{{nome}}</p>
+            <p class="text-xs text-zinc-500">
+              {{#if (eq chave 'admin')}}{{contagem.admin}}{{else if (eq chave 'barbeiro')}}{{contagem.barbeiro}}{{else}}{{contagem.cliente}}{{/if}}
+              usuário(s) com este perfil
+            </p>
+          </div>
+        </div>
+        <div class="flex-1 space-y-3 p-4">
+          <p class="text-sm text-zinc-400">{{descricao}}</p>
+          <p class="text-[11px] font-semibold uppercase tracking-widest text-zinc-600">Rotas liberadas</p>
+          <ul class="space-y-1.5 text-sm text-zinc-300">
+            {{#each rotas}}
+              <li class="flex items-start gap-2">
+                <i class="bi bi-check2 mt-0.5 text-emerald-400"></i>
+                <span>{{this}}</span>
+              </li>
+            {{/each}}
+          </ul>
+        </div>
+      </div>
+    {{/each}}
+  </div>
+
+  <div class="overflow-hidden rounded-xl border border-zinc-800">
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-zinc-800 text-sm">
+        <thead class="bg-zinc-900 text-xs uppercase tracking-wide text-zinc-500">
+          <tr>
+            <th class="px-4 py-3 text-left">Área</th>
+            <th class="px-4 py-3 text-center">Administrador</th>
+            <th class="px-4 py-3 text-center">Barbeiro</th>
+            <th class="px-4 py-3 text-center">Cliente</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-zinc-800 bg-zinc-950 text-zinc-300">
+          <tr><td class="px-4 py-3">Site público</td><td class="px-4 py-3 text-center text-emerald-400">✓</td><td class="px-4 py-3 text-center text-emerald-400">✓</td><td class="px-4 py-3 text-center text-emerald-400">✓</td></tr>
+          <tr><td class="px-4 py-3">Agendar online</td><td class="px-4 py-3 text-center text-emerald-400">✓</td><td class="px-4 py-3 text-center text-emerald-400">✓</td><td class="px-4 py-3 text-center text-emerald-400">✓</td></tr>
+          <tr><td class="px-4 py-3">Minhas reservas</td><td class="px-4 py-3 text-center text-zinc-600">—</td><td class="px-4 py-3 text-center text-emerald-400">✓</td><td class="px-4 py-3 text-center text-emerald-400">✓</td></tr>
+          <tr><td class="px-4 py-3">Painel do barbeiro</td><td class="px-4 py-3 text-center text-emerald-400">✓</td><td class="px-4 py-3 text-center text-emerald-400">✓</td><td class="px-4 py-3 text-center text-zinc-600">—</td></tr>
+          <tr><td class="px-4 py-3">Painel administrativo</td><td class="px-4 py-3 text-center text-emerald-400">✓</td><td class="px-4 py-3 text-center text-zinc-600">—</td><td class="px-4 py-3 text-center text-zinc-600">—</td></tr>
+          <tr><td class="px-4 py-3">Financeiro e relatórios</td><td class="px-4 py-3 text-center text-emerald-400">✓</td><td class="px-4 py-3 text-center text-zinc-600">—</td><td class="px-4 py-3 text-center text-zinc-600">—</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <p class="text-xs text-zinc-500">
+    Quem tem perfil <strong class="text-zinc-300">barbeiro</strong> e também é cliente pode usar a agenda online normalmente:
+    as reservas aparecem em <a href="/minhas-reservas" class="text-amber-400 underline">Minhas reservas</a>.
+  </p>
+</div>

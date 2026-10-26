@@ -1,0 +1,63 @@
+<div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-5">
+    <div>
+        <p class="text-[11px] font-semibold uppercase tracking-widest text-amber-500">Relatórios</p>
+        <h2 class="text-xl sm:text-2xl font-bold text-white">Produtos</h2>
+        <p class="text-sm text-zinc-500 mt-0.5">Situação atual do estoque e valor investido.</p>
+    </div>
+    <div class="flex gap-2 nao-imprimir">
+        <a href="/admin/relatorios" class="botao botao-secundario"><i class="bi bi-arrow-left"></i> Voltar</a>
+        <button type="button" onclick="window.print()" class="botao botao-secundario"><i class="bi bi-printer"></i> Imprimir</button>
+    </div>
+</div>
+
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+    <div class="cartao p-4">
+        <p class="text-[11px] uppercase tracking-wider text-zinc-500">Produtos</p>
+        <p class="text-xl font-bold text-white mt-1">{{totais.itens}}</p>
+    </div>
+    <div class="cartao p-4">
+        <p class="text-[11px] uppercase tracking-wider text-zinc-500">Unidades</p>
+        <p class="text-xl font-bold text-white mt-1">{{totais.unidades}}</p>
+    </div>
+    <div class="cartao p-4">
+        <p class="text-[11px] uppercase tracking-wider text-zinc-500">Custo do estoque</p>
+        <p class="text-xl font-bold text-rose-300 mt-1">{{moeda totais.custo}}</p>
+    </div>
+    <div class="cartao p-4">
+        <p class="text-[11px] uppercase tracking-wider text-zinc-500">Venda potencial</p>
+        <p class="text-xl font-bold text-emerald-400 mt-1">{{moeda totais.venda}}</p>
+    </div>
+</div>
+
+<div class="cartao overflow-hidden cartao-impressao">
+    <div class="overflow-x-auto">
+        <table class="tabela min-w-[760px]">
+            <thead>
+                <tr>
+                    <th>Produto</th>
+                    <th>Categoria</th>
+                    <th class="numero">Estoque</th>
+                    <th class="numero">Custo unit.</th>
+                    <th class="numero">Venda unit.</th>
+                    <th class="numero">Total em estoque</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each produtos}}
+                <tr>
+                    <td class="font-medium text-zinc-100">{{nome}}</td>
+                    <td>{{#if categoria}}{{categoria.nome}}{{else}}—{{/if}}</td>
+                    <td class="numero">
+                        {{#if (lte estoque estoqueMinimo)}}<span class="text-rose-300 font-semibold">{{estoque}}</span>{{else}}{{estoque}}{{/if}}
+                    </td>
+                    <td class="numero">{{moeda precoCusto}}</td>
+                    <td class="numero">{{moeda precoVenda}}</td>
+                    <td class="numero font-semibold">{{moeda valorVenda}}</td>
+                </tr>
+                {{else}}
+                <tr><td colspan="6"><div class="tabela-vazia">Nenhum produto cadastrado.</div></td></tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
+</div>

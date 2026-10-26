@@ -1,0 +1,65 @@
+<div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-5">
+    <div>
+        <p class="text-[11px] font-semibold uppercase tracking-widest text-amber-500">Financeiro</p>
+        <h2 class="text-xl sm:text-2xl font-bold text-white">Compras de produtos</h2>
+        <p class="text-sm text-zinc-500 mt-0.5">Ao registrar uma compra, o estoque é atualizado automaticamente.</p>
+    </div>
+    <a href="/admin/compras/nova" class="botao botao-primario"><i class="bi bi-plus-lg"></i> Nova compra</a>
+</div>
+
+{{> admin/filtro-periodo}}
+
+<div class="grid grid-cols-2 gap-3 mb-4">
+    <div class="cartao p-4">
+        <p class="text-[11px] uppercase tracking-wider text-zinc-500">Compras no período</p>
+        <p class="text-xl font-bold text-white mt-1">{{quantidade}}</p>
+    </div>
+    <div class="cartao p-4">
+        <p class="text-[11px] uppercase tracking-wider text-zinc-500">Total comprado</p>
+        <p class="text-xl font-bold text-rose-300 mt-1">{{moeda total}}</p>
+    </div>
+</div>
+
+<div class="cartao overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="tabela min-w-[700px]">
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Fornecedor</th>
+                    <th class="numero">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each compras}}
+                <tr>
+                    <td>{{data data}}</td>
+                    <td class="text-zinc-100">{{#if fornecedor}}{{fornecedor.nome}}{{else}}Não informado{{/if}}</td>
+                    <td class="numero font-semibold text-zinc-100">{{moeda valorTotal}}</td>
+                </tr>
+                {{#if itens.length}}
+                <tr>
+                    <td colspan="3" class="!py-2 bg-zinc-950/40">
+                        <p class="text-xs text-zinc-500">
+                            <i class="bi bi-box-seam mr-1"></i>
+                            {{#each itens}}{{quantidade}}x {{descricao}} ({{moeda precoUnitario}}){{#unless @last}} · {{/unless}}{{/each}}
+                        </p>
+                        {{#if observacoes}}<p class="text-xs text-zinc-600 italic mt-1">{{observacoes}}</p>{{/if}}
+                    </td>
+                </tr>
+                {{/if}}
+                {{else}}
+                <tr>
+                    <td colspan="3">
+                        <div class="tabela-vazia">
+                            <i class="bi bi-cart-x text-3xl block mb-2 text-zinc-600"></i>
+                            Nenhuma compra registrada neste período.
+                            <div class="mt-3"><a href="/admin/compras/nova" class="botao botao-primario botao-mini">Registrar compra</a></div>
+                        </div>
+                    </td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,171 @@
+<div class="max-w-5xl mx-auto">
+    <div class="flex items-center gap-3 mb-5">
+        <a href="{{voltar}}" class="botao botao-icone" title="Voltar"><i class="bi bi-arrow-left"></i></a>
+        <div>
+            <p class="text-[11px] font-semibold uppercase tracking-widest text-amber-500">Agenda</p>
+            <h2 class="text-xl sm:text-2xl font-bold text-white">Novo agendamento</h2>
+        </div>
+    </div>
+
+    {{#if mensagem}}
+    <div class="alerta alerta-erro mb-4"><i class="bi bi-exclamation-triangle"></i><span>{{mensagem}}</span></div>
+    {{/if}}
+
+    <form id="form-agenda-admin" method="POST" action="/admin/agendamentos" class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+        <!-- Serviços -->
+        <div class="lg:col-span-2 cartao p-4 sm:p-5">
+            <div class="flex items-center justify-between mb-3">
+                <h3 class="font-semibold text-white">1. Escolha os serviços</h3>
+                <span class="text-xs text-zinc-500" id="contador-servicos">0 selecionado(s)</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {{#each servicos}}
+                <label class="relative border border-zinc-800 hover:border-amber-500/40 rounded-xl p-3.5 cursor-pointer transition bg-zinc-950/40">
+                    <input type="checkbox" name="servicos" value="{{id}}" data-preco="{{valorInput preco}}" data-duracao="{{duracao}}" {{#if selecionado}}checked{{/if}} class="campo-check absolute top-3 right-3">
+                    <p class="font-semibold text-sm text-zinc-100 pr-6">{{nome}}</p>
+                    <p class="text-xs text-zinc-500 mt-1">{{#if categoria}}{{categoria.nome}} · {{/if}}{{duracao}} min</p>
+                    <p class="text-sm font-bold text-amber-400 mt-2">{{moeda preco}}</p>
+                </label>
+                {{else}}
+                <p class="text-sm text-zinc-500 sm:col-span-2">Nenhum serviço ativo. <a href="/admin/servicos/novo" class="text-amber-500 hover:underline">Cadastre um serviço primeiro</a>.</p>
+                {{/each}}
+            </div>
+        </div>
+
+        <!-- Dados do agendamento -->
+        <div class="cartao p-4 sm:p-5 space-y-4">
+            <h3 class="font-semibold text-white">2. Dados do atendimento</h3>
+
+            <div>
+                <label for="clienteId" class="rotulo">Cliente cadastrado</label>
+                <select id="clienteId" name="clienteId" class="campo-select">
+                    <option value="">Cliente novo (preencher abaixo)</option>
+                    {{#each clientes}}
+                    <option value="{{id}}" {{#if (eq ../valores.clienteId id)}}selected{{/if}}>{{nome}} — {{telefone}}</option>
+                    {{/each}}
+                </select>
+            </div>
+
+            <details class="rounded-xl border border-zinc-800 bg-zinc-950/40 p-3" {{#if valores.novoClienteNome}}open{{/if}}>
+                <summary class="text-xs font-medium text-zinc-400 cursor-pointer">Cliente novo? Preencha aqui</summary>
+                <div class="space-y-3 pt-3">
+                    <div>
+                        <label for="novoClienteNome" class="rotulo">Nome</label>
+                        <input type="text" id="novoClienteNome" name="novoClienteNome" value="{{valores.novoClienteNome}}" class="campo" placeholder="Nome do cliente">
+                    </div>
+                    <div>
+                        <label for="novoClienteTelefone" class="rotulo">WhatsApp</label>
+                        <input type="text" id="novoClienteTelefone" name="novoClienteTelefone" value="{{valores.novoClienteTelefone}}" class="campo" placeholder="(98) 99999-9999">
+                    </div>
+                </div>
+            </details>
+
+            <div>
+                <label for="funcionarioId" class="rotulo">Barbeiro <span class="text-amber-500">*</span></label>
+                <select id="funcionarioId" name="funcionarioId" required class="campo-select">
+                    <option value="">Selecione...</option>
+                    {{#each funcionarios}}
+                    <option value="{{id}}" {{#if (eq ../valores.funcionarioId id)}}selected{{/if}}>{{nome}}</option>
+                    {{/each}}
+                </select>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label for="data" class="rotulo">Data <span class="text-amber-500">*</span></label>
+                    <input type="date" id="data" name="data" value="{{valores.data}}" min="{{dataMinima}}" max="{{dataMaxima}}" required class="campo">
+                </div>
+                <div>
+                    <label for="hora" class="rotulo">Hora <span class="text-amber-500">*</span></label>
+                    <select id="hora" name="hora" required class="campo-select">
+                        <option value="{{valores.hora}}">{{#if valores.hora}}{{valores.hora}}{{else}}Escolha...{{/if}}</option>
+                    </select>
+                </div>
+            </div>
+            <p id="aviso-horarios" class="text-xs text-zinc-500">Selecione serviços, barbeiro e data para ver os horários livres.</p>
+
+            <div>
+                <label for="status" class="rotulo">Status</label>
+                <select id="status" name="status" class="campo-select">
+                    <option value="pendente" {{#if (eq valores.status 'pendente')}}selected{{/if}}>Pendente</option>
+                    <option value="confirmado" {{#if (eq valores.status 'confirmado')}}selected{{/if}}>Confirmado</option>
+                    <option value="concluido" {{#if (eq valores.status 'concluido')}}selected{{/if}}>Concluído</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="observacoes" class="rotulo">Observações</label>
+                <textarea id="observacoes" name="observacoes" rows="2" class="campo-texto" placeholder="Ex.: cliente pediu máquina 1 nas laterais">{{valores.observacoes}}</textarea>
+            </div>
+
+            <!-- Resumo -->
+            <div class="rounded-xl bg-zinc-950 border border-zinc-800 p-3.5 text-sm space-y-1">
+                <div class="flex justify-between text-zinc-400"><span>Serviços</span><span id="resumo-quantidade">0</span></div>
+                <div class="flex justify-between text-zinc-400"><span>Duração</span><span id="resumo-duracao">0 min</span></div>
+                <div class="flex justify-between font-bold text-amber-400 pt-1 border-t border-zinc-800"><span>Total</span><span id="resumo-total">R$ 0,00</span></div>
+            </div>
+
+            <button type="submit" class="botao botao-primario w-full"><i class="bi bi-calendar-check"></i> Agendar</button>
+        </div>
+    </form>
+</div>
+
+<script>
+(function () {
+    const form = document.getElementById('form-agenda-admin');
+    const caixas = Array.from(form.querySelectorAll('input[name="servicos"]'));
+    const seletorBarbeiro = document.getElementById('funcionarioId');
+    const campoData = document.getElementById('data');
+    const seletorHora = document.getElementById('hora');
+    const aviso = document.getElementById('aviso-horarios');
+    const horaInicial = seletorHora.value;
+    const moeda = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+
+    function resumo() {
+        const escolhidos = caixas.filter((caixa) => caixa.checked);
+        const total = escolhidos.reduce((soma, caixa) => soma + Number(caixa.dataset.preco), 0);
+        const duracao = escolhidos.reduce((soma, caixa) => soma + Number(caixa.dataset.duracao), 0);
+        document.getElementById('resumo-quantidade').textContent = escolhidos.length;
+        document.getElementById('resumo-duracao').textContent = duracao + ' min';
+        document.getElementById('resumo-total').textContent = moeda.format(total);
+        document.getElementById('contador-servicos').textContent = escolhidos.length + ' selecionado(s)';
+        return escolhidos.map((caixa) => caixa.value);
+    }
+
+    async function carregarHorarios() {
+        const servicos = resumo();
+        if (!servicos.length || !seletorBarbeiro.value || !campoData.value) {
+            seletorHora.innerHTML = '<option value="">Escolha...</option>';
+            aviso.textContent = 'Selecione serviços, barbeiro e data para ver os horários livres.';
+            return;
+        }
+
+        aviso.textContent = 'Carregando horários...';
+        try {
+            const resposta = await fetch('/agendar/horarios?servico=' + servicos.join(',') +
+                '&funcionarioId=' + seletorBarbeiro.value + '&data=' + campoData.value);
+            const dados = await resposta.json();
+
+            seletorHora.innerHTML = '<option value="">Selecione...</option>';
+            dados.horarios.forEach((horario) => {
+                const opcao = document.createElement('option');
+                opcao.value = horario;
+                opcao.textContent = horario;
+                seletorHora.appendChild(opcao);
+            });
+
+            if (horaInicial && dados.horarios.includes(horaInicial)) seletorHora.value = horaInicial;
+            aviso.textContent = dados.mensagem || (dados.horarios.length + ' horário(s) disponível(is).');
+        } catch (erro) {
+            aviso.textContent = 'Não foi possível carregar os horários.';
+        }
+    }
+
+    caixas.forEach((caixa) => caixa.addEventListener('change', () => { resumo(); carregarHorarios(); }));
+    seletorBarbeiro.addEventListener('change', carregarHorarios);
+    campoData.addEventListener('change', carregarHorarios);
+    resumo();
+    if (caixas.some((caixa) => caixa.checked)) carregarHorarios();
+})();
+</script>

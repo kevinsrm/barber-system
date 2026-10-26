@@ -1,0 +1,59 @@
+<div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-5">
+    <div>
+        <p class="text-[11px] font-semibold uppercase tracking-widest text-amber-500">Relatórios</p>
+        <h2 class="text-xl sm:text-2xl font-bold text-white">Comissões por barbeiro</h2>
+        <p class="text-sm text-zinc-500 mt-0.5">De {{data inicio}} a {{data fim}}</p>
+    </div>
+    <div class="flex gap-2 nao-imprimir">
+        <a href="/admin/relatorios" class="botao botao-secundario"><i class="bi bi-arrow-left"></i> Voltar</a>
+        <button type="button" onclick="window.print()" class="botao botao-secundario"><i class="bi bi-printer"></i> Imprimir</button>
+    </div>
+</div>
+
+{{> admin/filtro-periodo}}
+
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
+    <div class="cartao p-4">
+        <p class="text-[11px] uppercase tracking-wider text-zinc-500">Atendimentos</p>
+        <p class="text-xl font-bold text-white mt-1">{{totais.atendimentos}}</p>
+    </div>
+    <div class="cartao p-4">
+        <p class="text-[11px] uppercase tracking-wider text-zinc-500">Base de cálculo</p>
+        <p class="text-xl font-bold text-white mt-1">{{moeda totais.base}}</p>
+    </div>
+    <div class="cartao p-4 border-amber-500/30">
+        <p class="text-[11px] uppercase tracking-wider text-zinc-500">Total de comissões</p>
+        <p class="text-xl font-black text-amber-400 mt-1">{{moeda totais.comissoes}}</p>
+    </div>
+</div>
+
+<div class="cartao overflow-hidden cartao-impressao">
+    <div class="overflow-x-auto">
+        <table class="tabela min-w-[760px]">
+            <thead>
+                <tr>
+                    <th>Barbeiro</th>
+                    <th class="numero">Atendimentos</th>
+                    <th class="numero">Serviços</th>
+                    <th class="numero">Vendas</th>
+                    <th class="numero">%</th>
+                    <th class="numero">Comissão</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each resumos}}
+                <tr>
+                    <td class="font-medium text-zinc-100">{{nome}}</td>
+                    <td class="numero">{{atendimentos}}</td>
+                    <td class="numero">{{moeda totalServicos}}</td>
+                    <td class="numero">{{moeda totalVendas}}</td>
+                    <td class="numero">{{numero percentual 0}}%</td>
+                    <td class="numero font-bold text-amber-400">{{moeda valorComissao}}</td>
+                </tr>
+                {{else}}
+                <tr><td colspan="6"><div class="tabela-vazia">Nenhum barbeiro ativo.</div></td></tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
+</div>

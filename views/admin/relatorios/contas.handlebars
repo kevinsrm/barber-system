@@ -1,0 +1,73 @@
+<div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-5">
+    <div>
+        <p class="text-[11px] font-semibold uppercase tracking-widest text-amber-500">Relatórios</p>
+        <h2 class="text-xl sm:text-2xl font-bold text-white">Contas</h2>
+        <p class="text-sm text-zinc-500 mt-0.5">Vencimentos de {{data inicio}} a {{data fim}}</p>
+    </div>
+    <div class="flex gap-2 nao-imprimir">
+        <a href="/admin/relatorios" class="botao botao-secundario"><i class="bi bi-arrow-left"></i> Voltar</a>
+        <button type="button" onclick="window.print()" class="botao botao-secundario"><i class="bi bi-printer"></i> Imprimir</button>
+    </div>
+</div>
+
+{{> admin/filtro-periodo}}
+
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+    <div class="cartao p-4">
+        <p class="text-[11px] uppercase tracking-wider text-zinc-500">A pagar</p>
+        <p class="text-xl font-bold text-rose-300 mt-1">{{moeda totais.aPagar}}</p>
+    </div>
+    <div class="cartao p-4">
+        <p class="text-[11px] uppercase tracking-wider text-zinc-500">Pagas</p>
+        <p class="text-xl font-bold text-zinc-300 mt-1">{{moeda totais.pagas}}</p>
+    </div>
+    <div class="cartao p-4">
+        <p class="text-[11px] uppercase tracking-wider text-zinc-500">A receber</p>
+        <p class="text-xl font-bold text-emerald-400 mt-1">{{moeda totais.aReceber}}</p>
+    </div>
+    <div class="cartao p-4">
+        <p class="text-[11px] uppercase tracking-wider text-zinc-500">Recebidas</p>
+        <p class="text-xl font-bold text-zinc-300 mt-1">{{moeda totais.recebidas}}</p>
+    </div>
+</div>
+
+<div class="cartao overflow-hidden cartao-impressao">
+    <div class="overflow-x-auto">
+        <table class="tabela min-w-[720px]">
+            <thead>
+                <tr>
+                    <th>Vencimento</th>
+                    <th>Tipo</th>
+                    <th>Descrição</th>
+                    <th class="numero">Valor</th>
+                    <th>Situação</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each contas}}
+                <tr>
+                    <td>{{data vencimento}}</td>
+                    <td>
+                        {{#if (eq tipo 'pagar')}}
+                        <span class="selo selo-vermelho"><i class="bi bi-arrow-up-circle"></i> A pagar</span>
+                        {{else}}
+                        <span class="selo selo-verde"><i class="bi bi-arrow-down-circle"></i> A receber</span>
+                        {{/if}}
+                    </td>
+                    <td class="text-zinc-100">{{descricao}}</td>
+                    <td class="numero font-semibold">{{moeda valor}}</td>
+                    <td>
+                        {{#if pago}}
+                        <span class="selo selo-verde"><i class="bi bi-check2"></i> {{#if (eq tipo 'pagar')}}Paga{{else}}Recebida{{/if}}</span>
+                        {{else}}
+                        <span class="selo selo-ambar">Em aberto</span>
+                        {{/if}}
+                    </td>
+                </tr>
+                {{else}}
+                <tr><td colspan="5"><div class="tabela-vazia">Nenhuma conta no período.</div></td></tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
+</div>

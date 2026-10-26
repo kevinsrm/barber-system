@@ -1,0 +1,27 @@
+<section class="py-20 sm:py-28 bg-zinc-950">
+    <div class="max-w-lg mx-auto px-4 sm:px-6 text-center">
+        <span class="w-16 h-16 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-400 flex items-center justify-center mx-auto mb-4">
+            <i class="bi bi-exclamation-triangle text-3xl"></i>
+        </span>
+        <h1 class="text-2xl sm:text-3xl font-black text-white">{{#if semBanco}}Banco de dados indisponível{{else}}Ops! Algo deu errado{{/if}}</h1>
+        {{#if semBanco}}
+        <p class="text-sm text-zinc-400 mt-3">O sistema não conseguiu falar com o MySQL. Confira os passos abaixo e tente novamente.</p>
+        <ol class="text-left text-sm text-zinc-300 mt-5 space-y-2 list-decimal list-inside bg-zinc-900 border border-zinc-800 rounded-xl p-4">
+            <li>O MySQL está ligado? (no XAMPP/WAMP, clique em "Start MySQL")</li>
+            <li>Os dados de <code class="text-amber-400">DB_HOST</code>, <code class="text-amber-400">DB_PORT</code>, <code class="text-amber-400">DB_NAME</code>, <code class="text-amber-400">DB_USER</code> e <code class="text-amber-400">DB_PASSWORD</code> do arquivo <code class="text-amber-400">.env</code> estão corretos?</li>
+            <li>O banco <code class="text-amber-400">dbbarber</code> já foi criado?</li>
+            <li>As tabelas existem? Rode <code class="text-amber-400">npm run db:sync</code>.</li>
+          </ol>
+        <p class="text-xs text-zinc-500 mt-3">Passo a passo completo: seção 4 e seção 12 do arquivo tutorial.txt.</p>
+        {{else}}
+        <p class="text-sm text-zinc-400 mt-3">Não conseguimos concluir esta ação agora. Tente novamente em alguns instantes.</p>
+        {{/if}}
+        {{#if detalhe}}
+        <div class="alerta alerta-erro mt-4 text-left text-xs break-words"><i class="bi bi-bug"></i><span>{{detalhe}}</span></div>
+        {{/if}}
+        <div class="flex flex-wrap justify-center gap-2 mt-6">
+            <a href="/" class="botao botao-primario"><i class="bi bi-house-door"></i> Voltar ao site</a>
+            <a href="/agendar" class="botao botao-secundario">Agendar horário</a>
+        </div>
+    </div>
+</section>

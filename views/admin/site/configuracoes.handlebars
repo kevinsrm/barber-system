@@ -1,0 +1,155 @@
+<div class="max-w-4xl mx-auto">
+    <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-5">
+        <div>
+            <p class="text-[11px] font-semibold uppercase tracking-widest text-amber-500">Site</p>
+            <h2 class="text-xl sm:text-2xl font-bold text-white">Configurações do site</h2>
+            <p class="text-sm text-zinc-500 mt-0.5">Logo, textos, contato e SEO do site público.</p>
+        </div>
+        <a href="/" target="_blank" rel="noopener" class="botao botao-secundario"><i class="bi bi-box-arrow-up-right"></i> Ver site</a>
+    </div>
+
+    {{#if mensagem}}
+    <div class="alerta alerta-erro mb-4"><i class="bi bi-exclamation-triangle"></i><span>{{mensagem}}</span></div>
+    {{/if}}
+
+    <form method="POST" action="/admin/configuracoes" enctype="multipart/form-data" class="space-y-4 sm:space-y-6">
+
+        <!-- Identidade -->
+        <section class="cartao p-5">
+            <h3 class="font-semibold text-white mb-4 flex items-center gap-2"><i class="bi bi-shop text-amber-500"></i> Identidade da barbearia</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="nome" class="rotulo">Nome da barbearia <span class="text-amber-500">*</span></label>
+                    <input type="text" id="nome" name="nome" value="{{site.nome}}" required class="campo">
+                </div>
+                <div>
+                    <label for="slogan" class="rotulo">Slogan</label>
+                    <input type="text" id="slogan" name="slogan" value="{{site.slogan}}" class="campo" placeholder="Tradição, estilo e atitude">
+                </div>
+
+                <!-- Logo -->
+                <div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="rounded-xl border border-zinc-800 bg-zinc-950/40 p-4">
+                        <p class="rotulo">Logo</p>
+                        <div class="flex items-center gap-3 mb-3">
+                            {{#if site.logo}}
+                            <img src="{{site.logo}}" alt="Logo atual" class="h-14 w-auto max-w-[140px] object-contain bg-zinc-900 rounded-lg p-1 border border-zinc-800">
+                            {{else}}
+                            <span class="w-14 h-14 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center"><i class="bi bi-scissors text-xl"></i></span>
+                            {{/if}}
+                            <p class="text-xs text-zinc-500">Aparece no site, login, painel e favicon.</p>
+                        </div>
+                        <input type="file" name="logo" accept=".jpg,.jpeg,.png,.webp" class="campo text-xs file:mr-3 file:rounded-md file:border-0 file:bg-amber-500 file:text-zinc-950 file:px-3 file:py-1.5 file:text-xs file:font-semibold">
+                        <p class="ajuda">JPG, PNG ou WEBP · até 2 MB.</p>
+                        {{#if site.logo}}
+                        <label class="flex items-center gap-2 mt-2 text-xs text-zinc-400">
+                            <input type="checkbox" name="removerLogo" value="1" class="campo-check"> Remover logo atual
+                        </label>
+                        {{/if}}
+                    </div>
+
+                    <div class="rounded-xl border border-zinc-800 bg-zinc-950/40 p-4">
+                        <p class="rotulo">Imagem de compartilhamento (Open Graph)</p>
+                        <div class="flex items-center gap-3 mb-3">
+                            {{#if site.ogImagem}}
+                            <img src="{{site.ogImagem}}" alt="Imagem de compartilhamento" class="h-14 w-24 object-cover rounded-lg border border-zinc-800">
+                            {{else}}
+                            <span class="w-24 h-14 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-600 flex items-center justify-center"><i class="bi bi-image"></i></span>
+                            {{/if}}
+                            <p class="text-xs text-zinc-500">Usada no preview ao compartilhar o site (1200x630 é o ideal).</p>
+                        </div>
+                        <input type="file" name="ogImagem" accept=".jpg,.jpeg,.png,.webp" class="campo text-xs file:mr-3 file:rounded-md file:border-0 file:bg-amber-500 file:text-zinc-950 file:px-3 file:py-1.5 file:text-xs file:font-semibold">
+                        <p class="ajuda">Se não enviar, usamos a logo.</p>
+                        {{#if site.ogImagem}}
+                        <label class="flex items-center gap-2 mt-2 text-xs text-zinc-400">
+                            <input type="checkbox" name="removerOgImagem" value="1" class="campo-check"> Remover imagem atual
+                        </label>
+                        {{/if}}
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Textos do site -->
+        <section class="cartao p-5">
+            <h3 class="font-semibold text-white mb-4 flex items-center gap-2"><i class="bi bi-pencil-square text-amber-500"></i> Textos da página inicial</h3>
+            <div class="grid grid-cols-1 gap-4">
+                <div>
+                    <label for="heroTitulo" class="rotulo">Título principal (hero)</label>
+                    <input type="text" id="heroTitulo" name="heroTitulo" value="{{site.heroTitulo}}" class="campo" maxlength="120">
+                </div>
+                <div>
+                    <label for="heroSubtitulo" class="rotulo">Subtítulo do hero</label>
+                    <textarea id="heroSubtitulo" name="heroSubtitulo" rows="2" class="campo-texto" maxlength="300">{{site.heroSubtitulo}}</textarea>
+                </div>
+                <div>
+                    <label for="sobre" class="rotulo">Sobre a barbearia</label>
+                    <textarea id="sobre" name="sobre" rows="3" class="campo-texto">{{site.sobre}}</textarea>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contato -->
+        <section class="cartao p-5">
+            <h3 class="font-semibold text-white mb-4 flex items-center gap-2"><i class="bi bi-geo-alt text-amber-500"></i> Contato e redes sociais</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="telefone" class="rotulo">Telefone</label>
+                    <input type="text" id="telefone" name="telefone" value="{{site.telefone}}" class="campo" placeholder="(98) 3222-4455">
+                </div>
+                <div>
+                    <label for="whatsapp" class="rotulo">WhatsApp</label>
+                    <input type="text" id="whatsapp" name="whatsapp" value="{{site.whatsapp}}" class="campo" placeholder="5598988887777">
+                    <p class="ajuda">Somente números: 55 + DDD + número (ex.: 5598988887777).</p>
+                </div>
+                <div>
+                    <label for="email" class="rotulo">E-mail</label>
+                    <input type="email" id="email" name="email" value="{{site.email}}" class="campo" placeholder="contato@barbearia.com">
+                </div>
+                <div>
+                    <label for="horarioFuncionamento" class="rotulo">Horário de funcionamento</label>
+                    <input type="text" id="horarioFuncionamento" name="horarioFuncionamento" value="{{site.horarioFuncionamento}}" class="campo" placeholder="Segunda a sábado, das 09h às 19h">
+                </div>
+                <div class="md:col-span-2">
+                    <label for="endereco" class="rotulo">Endereço</label>
+                    <input type="text" id="endereco" name="endereco" value="{{site.endereco}}" class="campo" placeholder="Rua, número, bairro, cidade">
+                </div>
+                <div>
+                    <label for="instagram" class="rotulo">Instagram (link completo)</label>
+                    <input type="url" id="instagram" name="instagram" value="{{site.instagram}}" class="campo" placeholder="https://instagram.com/sua-barbearia">
+                </div>
+                <div>
+                    <label for="facebook" class="rotulo">Facebook (link completo)</label>
+                    <input type="url" id="facebook" name="facebook" value="{{site.facebook}}" class="campo" placeholder="https://facebook.com/sua-barbearia">
+                </div>
+            </div>
+        </section>
+
+        <!-- SEO -->
+        <section class="cartao p-5">
+            <h3 class="font-semibold text-white mb-1 flex items-center gap-2"><i class="bi bi-search text-amber-500"></i> SEO e redes sociais</h3>
+            <p class="text-xs text-zinc-500 mb-4">Estes dados aparecem no Google e no preview do WhatsApp/Instagram.</p>
+            <div class="grid grid-cols-1 gap-4">
+                <div>
+                    <label for="tituloSeo" class="rotulo">Título para buscadores (title) <span class="text-amber-500">*</span></label>
+                    <input type="text" id="tituloSeo" name="tituloSeo" value="{{site.tituloSeo}}" required maxlength="70" class="campo">
+                    <p class="ajuda">Recomendado: até 60 caracteres.</p>
+                </div>
+                <div>
+                    <label for="descricaoSeo" class="rotulo">Descrição (meta description) <span class="text-amber-500">*</span></label>
+                    <textarea id="descricaoSeo" name="descricaoSeo" rows="2" required maxlength="160" class="campo-texto">{{site.descricaoSeo}}</textarea>
+                    <p class="ajuda">Recomendado: até 155 caracteres.</p>
+                </div>
+                <div>
+                    <label for="palavrasChave" class="rotulo">Palavras-chave</label>
+                    <input type="text" id="palavrasChave" name="palavrasChave" value="{{site.palavrasChave}}" class="campo" placeholder="barbearia, corte, barba, agendamento">
+                </div>
+            </div>
+        </section>
+
+        <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
+            <a href="/admin" class="botao botao-secundario">Cancelar</a>
+            <button type="submit" class="botao botao-primario"><i class="bi bi-check2"></i> Salvar configurações</button>
+        </div>
+    </form>
+</div>
