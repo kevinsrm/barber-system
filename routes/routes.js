@@ -45,6 +45,7 @@ middlewares
 verifica se user está autenticado
 */
 async function verificarAutenticacao(req, res, next) {
+    let um;
     let usuario;
     if(req.session.usuarioLogado){
         usuario = await User.findOne({
