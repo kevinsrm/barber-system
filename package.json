@@ -1,0 +1,17 @@
+{
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "body-parser": "^2.3.0",
+    "express": "^5.3.0",
+    "express-handlebars": "^9.0.2",
+    "express-session": "^1.19.0",
+    "mysql2": "^3.24.6",
+    "nodemon": "^3.1.14",
+    "sequelize": "^6.37.8"
+  }
+}

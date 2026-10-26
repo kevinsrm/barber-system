@@ -1,0 +1,71 @@
+<!-- SEÇÃO PRINCIPAL DE SERVIÇOS -->
+<section class="bg-zinc-950 py-16 min-h-[100dvh]">
+    <div class="max-w-7xl mx-auto px-6">
+
+        {{#if servicos.length}}
+            <!-- FORMULÁRIO DINÂMICO DE SELEÇÃO DE SERVIÇOS -->
+            <form action="/agendar" method="POST" id="form-servicos">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+                    {{#each servicos}}
+                        <label class="relative bg-gradient-to-b from-zinc-900 to-zinc-900/60 border border-zinc-800 hover:border-amber-500/40 rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1 shadow-xl flex flex-col justify-between group cursor-pointer has-[:checked]:border-amber-500 has-[:checked]:bg-amber-500/5">
+                            
+                            <div>
+                                <div class="flex items-start justify-between gap-4 mb-4">
+                                    <div class="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 text-xl group-hover:bg-amber-500 group-hover:text-zinc-950 transition-colors duration-300">
+                                        <i class="bi {{#if icon}}{{icon}}{{else}}bi-scissors{{/if}}"></i>
+                                    </div>
+
+                                    <!-- CHECKBOX ESTILIZADO -->
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-2xl font-black text-amber-400 tracking-tight">R$ {{preco}}</span>
+                                        <input type="checkbox" name="servicos" value="{{id}}" class="w-5 h-5 rounded border-zinc-700 bg-zinc-800 text-amber-500 focus:ring-amber-500 focus:ring-offset-zinc-900">
+                                    </div>
+                                </div>
+
+                                <h3 class="text-xl font-bold text-white mb-2 group-hover:text-amber-400 transition-colors">
+                                    {{nome}}
+                                </h3>
+
+                                <p class="text-zinc-400 text-sm font-light leading-relaxed mb-6">
+                                    {{descricao}}
+                                </p>
+                            </div>
+
+                            <div class="pt-4 border-t border-zinc-800/80 flex items-center justify-between">
+                                <span class="text-xs text-zinc-500 font-medium inline-flex items-center gap-1.5">
+                                    <i class="bi bi-clock"></i> {{duracao}} min
+                                </span>
+                                <span class="text-xs font-semibold text-amber-400 group-hover:text-amber-300 inline-flex items-center gap-1 transition-colors">
+                                    Selecionar <i class="bi bi-check2-circle"></i>
+                                </span>
+                            </div>
+                        </label>
+                    {{/each}}
+                </div>
+
+                <!-- BOTAO DE ENVIAR O FORMULÁRIO COM OS SERVIÇOS SELECIONADOS -->
+                <div class="text-center">
+                    <button type="submit" class="bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold px-10 py-4 rounded-xl shadow-lg shadow-amber-500/10 transition-all duration-300 inline-flex items-center gap-2 text-base transform hover:-translate-y-0.5">
+                        <i class="bi bi-calendar-check-fill"></i> Prosseguir com os Selecionados
+                    </button>
+                </div>
+            </form>
+
+        {{else}}
+            <!-- MENSAGEM DINÂMICA QUANDO NÃO HÁ SERVIÇOS CADASTRADOS -->
+            <div class="max-w-md mx-auto text-center py-12 px-6 bg-zinc-900/50 border border-zinc-800 rounded-3xl backdrop-blur-sm">
+                <div class="w-16 h-16 bg-amber-500/10 border border-amber-500/20 text-amber-400 rounded-2xl flex items-center justify-center mx-auto mb-4 text-3xl">
+                    <i class="bi bi-journal-x"></i>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-2">Nenhum serviço disponível no momento</h3>
+                <p class="text-zinc-400 text-sm font-light mb-6 leading-relaxed">
+                    Estamos atualizando nosso catálogo e tabela de preços. Entre em contato conosco ou faça um agendamento geral.
+                </p>
+                <a href="/agendar" class="bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold px-6 py-3 rounded-xl shadow-lg shadow-amber-500/10 transition-all duration-300 inline-flex items-center justify-center gap-2 text-sm">
+                    <i class="bi bi-calendar-check-fill"></i> Ir para Agendamento
+                </a>
+            </div>
+        {{/if}}
+
+    </div>
+</section>
