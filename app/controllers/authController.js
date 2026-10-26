@@ -14,8 +14,10 @@ function normalizarEmail(valor) {
 export function telaLogin(req, res) {
   res.render('auth/login', {
     layout: 'auth',
+    titulo: 'Entrar',
     mensagem: req.query.mensagem || null,
-    email: ''
+    email: '',
+    seo: { titulo: `Entrar | ${res.locals.site.nome}` }
   });
 }
 
@@ -25,8 +27,10 @@ export async function entrar(req, res) {
 
   const responderErro = (mensagem) => res.status(401).render('auth/login', {
     layout: 'auth',
+    titulo: 'Entrar',
     mensagem,
-    email
+    email,
+    seo: { titulo: `Entrar | ${res.locals.site.nome}` }
   });
 
   // Bloqueia quem já errou a senha muitas vezes
@@ -34,8 +38,10 @@ export async function entrar(req, res) {
   if (minutosBloqueado) {
     return res.status(429).render('auth/login', {
       layout: 'auth',
+      titulo: 'Entrar',
       mensagem: `Muitas tentativas de login. Tente novamente em ${minutosBloqueado} minuto(s).`,
-      email
+      email,
+      seo: { titulo: `Entrar | ${res.locals.site.nome}` }
     });
   }
 
@@ -74,8 +80,10 @@ export async function entrar(req, res) {
 export function telaCadastro(req, res) {
   res.render('auth/cadastro', {
     layout: 'auth',
+    titulo: 'Criar conta',
     mensagem: req.query.mensagem || null,
-    valores: {}
+    valores: {},
+    seo: { titulo: `Criar conta | ${res.locals.site.nome}` }
   });
 }
 
@@ -88,8 +96,10 @@ export async function cadastrar(req, res) {
 
   const responderErro = (mensagem) => res.status(400).render('auth/cadastro', {
     layout: 'auth',
+    titulo: 'Criar conta',
     mensagem,
-    valores: { nome, email, telefone }
+    valores: { nome, email, telefone },
+    seo: { titulo: `Criar conta | ${res.locals.site.nome}` }
   });
 
   if (!nome || !email || !senha) return responderErro('Preencha nome, e-mail e senha.');
